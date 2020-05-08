@@ -6,9 +6,9 @@
 				<h1 class="text-6xl text-white">Ben Schattinger</h1>
 			</div>
 		</header>
-		<main class="container mx-auto flex-grow">
+		<main class="container mx-auto flex-grow px-2">
 			<h1 id="projects" class="text-4xl mt-4">Projects</h1>
-			<div class="flex flex-col md:flex-row mb-4 items-stretch" v-for="i in rowCount">
+			<div class="flex flex-col md:flex-row md:mb-4 items-stretch" v-for="i in rowCount">
 				<project-card v-for="{node} in row(i)" :key="node.id" :project="node" class="card" />
 			</div>
 			<h1 id="contact" class="mt-12">Contact</h1>

@@ -3,7 +3,7 @@
 		<header class="header">
 			<nav-menu />
 		</header>
-		<main class="container mx-auto flex-grow">
+		<main class="container mx-auto flex-grow px-2">
 			<slot />
 		</main>
 		<page-footer />
