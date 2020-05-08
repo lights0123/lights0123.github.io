@@ -1,0 +1,41 @@
+{
+	"name": "lights0123",
+	"private": true,
+	"scripts": {
+		"build": "gridsome build",
+		"develop": "gridsome develop",
+		"explore": "gridsome explore"
+	},
+	"dependencies": {
+		"@openfonts/cantarell_latin": "^1.44.1",
+		"feather-icons": "^4.28.0",
+		"gridsome": "^0.7.14",
+		"prism-themes": "^1.4.0",
+		"remark-abbr": "^1.4.0",
+		"remark-containers": "^1.1.2",
+		"remark-footnotes": "^1.0.0",
+		"remark-github": "^9.0.0",
+		"vue-property-decorator": "^8.4.2",
+		"vue-svg-loader": "^0.16.0"
+	},
+	"prettier": {
+		"trailingComma": "es5",
+		"tabWidth": 4,
+		"useTabs": true,
+		"semi": true,
+		"singleQuote": true,
+		"proseWrap": "never"
+	},
+	"devDependencies": {
+		"@gridsome/source-filesystem": "^0.6.2",
+		"@gridsome/transformer-remark": "^0.5.0",
+		"gridsome-plugin-remark-prismjs-all": "^0.3.5",
+		"gridsome-plugin-tailwindcss": "^2.2.48",
+		"gridsome-plugin-typescript": "^0.4.0",
+		"node-sass": "^4.14.1",
+		"prettier": "^2.0.5",
+		"sass-loader": "^8.0.2",
+		"ts-loader": "^7.0.3",
+		"typescript": "^3.8.3"
+	}
+}
