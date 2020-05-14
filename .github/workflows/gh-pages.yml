@@ -30,6 +30,9 @@ jobs:
         env:
           GRIDSOME_FORM_URL: ${{ secrets.GRIDSOME_FORM_URL }}
           GRIDSOME_EMAIL: ${{ secrets.GRIDSOME_EMAIL }}
+          MATOMO_HOST: ${{ secrets.MATOMO_HOST }}
+          MATOMO_SITE_ID: ${{ secrets.MATOMO_SITE_ID }}
+          GRIDSOME_MATOMO_IMAGE: ${{ secrets.GRIDSOME_MATOMO_IMAGE }}
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

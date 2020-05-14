@@ -3,11 +3,18 @@
 
 // Changes here require a server restart.
 // To restart press CTRL + C in terminal and run `gridsome develop`
-
+const { MATOMO_HOST, MATOMO_SITE_ID } = process.env;
 module.exports = {
 	siteName: 'Ben Schattinger',
 	siteDescription: 'The website of Ben Schattinger',
 	plugins: [
+		...(MATOMO_HOST && MATOMO_SITE_ID ? [{
+			use: 'gridsome-plugin-matomo',
+			options: {
+				host: MATOMO_HOST,
+				siteId: MATOMO_SITE_ID,
+			},
+		}] : []),
 		{
 			use: 'gridsome-plugin-typescript',
 		},
