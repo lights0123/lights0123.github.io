@@ -28,21 +28,23 @@
 				Submit
 			</div>
 		</button>
-		<div v-if="status === 'fail'" class="error border mt-4 border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+		<div v-if="status === 'fail'" class="error border mt-4 border-red-400 text-red-700 px-4 py-3 rounded relative"
+		     role="alert">
 			<strong class="font-bold">Failed to submit</strong>
 			<span class="block">
 				Something went wrong. Please try again or
 				<a :href="'mailto:' + fallback_email" class="border-b border-red-600">email me directly</a>.
 			</span>
 		</div>
-		<div v-if="status === 'success'" class="success border mt-4 border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+		<div v-if="status === 'success'"
+		     class="success border mt-4 border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
 			<strong class="font-bold">Success!</strong>
 		</div>
 	</form>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 
 @Component
 export default class ContactForm extends Vue {
@@ -52,6 +54,16 @@ export default class ContactForm extends Vue {
 	name = '';
 	message = '';
 	status: '' | 'submit' | 'success' | 'fail' = '';
+	changed = false;
+
+	@Watch('email')
+	@Watch('name')
+	@Watch('message')
+	onChange() {
+		if (this.changed) return;
+		this.changed = true;
+		window._paq.push(['trackEvent', 'Contact', 'Touch']);
+	}
 
 	async submit() {
 		this.status = 'submit';
@@ -72,6 +84,7 @@ export default class ContactForm extends Vue {
 			this.name = '';
 			this.message = '';
 			this.status = 'success';
+			window._paq.push(['trackEvent', 'Contact', 'Submit']);
 		} catch (e) {
 			this.status = 'fail';
 		}
