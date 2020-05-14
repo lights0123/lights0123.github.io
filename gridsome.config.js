@@ -7,6 +7,7 @@ const { MATOMO_HOST, MATOMO_SITE_ID } = process.env;
 module.exports = {
 	siteName: 'Ben Schattinger',
 	siteDescription: 'The website of Ben Schattinger',
+	siteUrl: 'https://lights0123.com',
 	plugins: [
 		...(MATOMO_HOST && MATOMO_SITE_ID ? [{
 			use: 'gridsome-plugin-matomo',
