@@ -24,7 +24,7 @@
 				</div>
 			</div>
 			<div class="hidden lg:flex text-ui-background mt-6 lg:mt-0" :style="expandMenu ? {display: 'flex'} : {}">
-				<a href="https://github.com/lights0123" target="_blank" title="Github">
+				<a href="https://github.com/lights0123" rel="noopener" target="_blank" title="Github">
 					<github role="img" aria-label="Github" />
 				</a>
 				<toggle-dark-mode />

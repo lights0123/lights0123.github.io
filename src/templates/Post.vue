@@ -6,11 +6,14 @@
 			</div>
 			<div class="order-1 w-full md:w-2/3">
 				<h1 class="text-5xl mb-0">{{$page.post.title}}</h1>
-				<p class="text-gray-600 text-sm mb-6"> {{ $page.post.date}} · <i>{{$page.post.timeToRead}} min read</i>
+				<p class="text-gray-600 text-sm mb-6">
+					<time :datetime="$page.post.rawDate">{{ $page.post.date }}</time>
+					· <i>{{ $page.post.timeToRead }} min read</i>
 				</p>
-				<div class="content">
+				<div class="content mb-10">
 					<p v-html="$page.post.content" />
 				</div>
+				<github-comments :title="$page.post.title" />
 			</div>
 		</article>
 	</Layout>
@@ -18,9 +21,70 @@
 
 <script>
 import OnThisPage from '@/components/OnThisPage.vue';
+import GithubComments from '@/components/GithubComments.vue';
 
 export default {
-	components: { OnThisPage },
+	components: { OnThisPage, GithubComments },
+	metaInfo() {
+		return {
+			title: this.$page.post.title,
+			meta: [
+				{
+					property: 'og:type',
+					content: 'article',
+					key: 'og:type',
+				},
+				{
+					property: 'og:title',
+					content: this.$page.post.title,
+				},
+				{
+					name: 'description',
+					content: this.$page.post.description,
+				},
+				{
+					property: 'og:description',
+					content: this.$page.post.description,
+					key: 'og:description',
+				},
+				{
+					property: 'article:author:first_name',
+					content: this.$static.metadata.siteName.split(' ')[0],
+				},
+				{
+					property: 'article:author:last_name',
+					content: this.$static.metadata.siteName.split(' ')[1],
+				},
+				{
+					property: 'article:published_time',
+					content: this.$page.post.rawDate,
+				},
+				{
+					property: 'article:modified_time',
+					content: this.$page.post.rawDate,
+				},
+			],
+			script: [{
+				type: 'application/ld+json',
+				json: {
+					'@context': 'https://schema.org',
+					'@type': 'BlogPosting',
+					mainEntityOfPage: {
+						'@type': 'WebPage',
+						'@id': this.$static.metadata.siteUrl + this.$url(this.$route.path),
+					},
+					headline: this.$page.post.title,
+					description: this.$page.post.description,
+					datePublished: this.$page.post.rawDate,
+					dateModified: this.$page.post.rawDate,
+					author: {
+						'@type': 'Person',
+						name: this.$static.metadata.siteName,
+					},
+				},
+			}],
+		};
+	},
 	name: 'Post',
 };
 </script>
@@ -35,6 +99,17 @@ export default {
 .content::v-deep {
 	p {
 		margin-bottom: 1em;
+		word-wrap: break-word;
+	}
+	> p p code {
+		word-wrap: break-word;
+	}
+
+	blockquote {
+		@apply border-l-4 border-solid pl-2 border-ui-blockquote bg-ui-text-inv py-1 mb-2;
+		> p:last-child {
+			@apply mb-0;
+		}
 	}
 
 	ul p, ol p {
@@ -94,13 +169,10 @@ export default {
 </style>
 <page-query>
 query Post ($path: String!) {
-	metadata {
-		siteName
-		siteDescription
-	}
 	post: post (path: $path) {
 		id
 		title
+		description
 		content
 		path
 		headings {
@@ -109,7 +181,18 @@ query Post ($path: String!) {
 			anchor
 		}
 		date (format: "MMMM D, YYYY")
+		rawDate: date
 		timeToRead
 	}
 }
 </page-query>
+
+<static-query>
+query {
+	metadata {
+		siteUrl
+		siteName
+		siteDescription
+	}
+}
+</static-query>

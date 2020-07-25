@@ -38,6 +38,7 @@ module.exports = {
 					'text-inv': 'var(--color-ui-text-inv)',
 					primary: 'var(--color-ui-primary)',
 					border: 'var(--color-ui-border)',
+					blockquote: 'var(--color-ui-blockquote)',
 				},
 			},
 		},

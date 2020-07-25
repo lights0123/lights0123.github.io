@@ -18,10 +18,10 @@
 							class="relative flex items-center py-1 text-sm transition transform hover:translate-x-1"
 							:class="{
               'pl-2': heading.depth === 2,
-              'pl-3': heading.depth === 3,
-              'pl-4': heading.depth === 4,
-              'pl-5': heading.depth === 5,
-              'pl-6': heading.depth === 6,
+              'pl-4': heading.depth === 3,
+              'pl-5': heading.depth === 4,
+              'pl-6': heading.depth === 5,
+              'pl-8': heading.depth === 6,
               'font-bold text-ui-primary': activeAnchor === heading.anchor
             }"
 					>
@@ -85,10 +85,6 @@ export default {
 			// headline active and add the hash to the url.
 			if (id) {
 				this.activeAnchor = '#' + id;
-
-				if (history.replaceState) {
-					history.replaceState(null, null, '#' + id);
-				}
 			}
 		},
 

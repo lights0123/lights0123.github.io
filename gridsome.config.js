@@ -46,6 +46,8 @@ module.exports = {
 					// Prevent purging of prism classes.
 					whitelistPatternsChildren: [
 						/token$/,
+						/gridsome-highlight/,
+						/line-numbers/,
 					],
 				},
 			},

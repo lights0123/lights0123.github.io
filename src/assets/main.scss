@@ -28,6 +28,7 @@ $primary: #409EFF;
 	--color-ui-text-inv: theme('colors.gray.100');
 	--color-ui-sidebar: theme('colors.gray.200');
 	--color-ui-border: theme('colors.gray.300');
+	--color-ui-blockquote: theme('colors.gray.500');
 	--color-ui-primary: #{$primary};
 	--color-code-highlight: #{lighten($primary, 31%)};
 }
@@ -41,6 +42,7 @@ html.dark {
 	--color-ui-text-inv: theme('colors.gray.900');
 	--color-ui-sidebar: theme('colors.gray.800');
 	--color-ui-border: theme('colors.gray.700');
+	--color-ui-blockquote: theme('colors.gray.700');
 	--color-ui-primary: #{$primary};
 	--color-code-highlight: #{darken($primary, 40%)};
 
@@ -51,7 +53,16 @@ html.dark {
 	margin: .5em 0;
 	overflow: auto;
 
-	pre[class*="language-"]::before {
+	pre[class*="language-"].line-numbers {
+		position: relative;
+		padding-left: 3.8em;
+		> code {
+			position: relative;
+			white-space: inherit;
+		}
+	}
+
+	/*pre[class*="language-"]::before {
 		@apply bg-ui-primary text-ui-text-inv;
 		border-radius: 0 0 .25rem .25rem;
 		font-size: 12px;
@@ -108,13 +119,14 @@ html.dark {
 	pre[class*="language-"] {
 		padding-top: 30px !important;
 		padding-left: 4.8em !important;
-	}
+	}*/
 
 	.line-numbers-rows {
 		padding-left: 1em;
 		width: auto !important;
 		text-align: right;
-		top: 30px;
+		//top: 30px;
+		top: 20px;
 
 		span::before {
 			padding-right: .8em !important;

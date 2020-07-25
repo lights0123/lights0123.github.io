@@ -67,12 +67,12 @@ query($page: Int) {
 		}
 		edges {
 			node {
-#				id
-#				title
-#				timeToRead
-#				description
-#				content
-#				date (format: "MMM D YYYY")
+				id
+				title
+				timeToRead
+				description
+				content
+				date (format: "MMM D YYYY")
 				path
 			}
 		}
