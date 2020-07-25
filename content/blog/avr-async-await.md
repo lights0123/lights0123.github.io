@@ -1,39 +1,77 @@
 ---
-title: "Async/Await for AVR with Rust"
-description: "With the recent ability for Rust to target AVR, it's time for me to bring my favorite feature of Rust to Arduino: async/await. Asynchronous code allows for doing (seemingly) multiple things at once, without the memory or CPU overhead of threads."
+title: 'Async/Await for AVR with Rust'
+description:
+    "With the recent ability for Rust to target AVR, it's time for me to bring my favorite feature
+    of Rust to Arduino: async/await. Asynchronous code allows for doing (seemingly) multiple things
+    at once, without the memory or CPU overhead of threads."
 date: 2020-07-25
 ---
 
-With the recent ability for Rust to compile for AVR microcontrollers, I thought that it's time for me to bring my favorite feature of Rust to Arduino: async/await.
+With the recent ability for Rust to compile for AVR microcontrollers, I thought that it's time for
+me to bring my favorite feature of Rust to Arduino: async/await.
+
+> **TL;DR:** final code is at https://github.com/lights0123/async-avr. [Here's an example of a
+> simple task that does two things at once][example-serial]. 
 
 # Introduction
 
-The [age-old][millis1] [question][millis2] [when][millis3] [learning][millis4] [Arduino][millis5]: *"[How can I do][millis6] [multiple things at once][millis7]"*? When programming for full operating systems, like any desktop, mobile, or higher-end embedded platforms, the answer is easy—threads. They're built into the OS, and you typically *have* to use them to take advantage of features like multiple CPU cores. Or, when programming for an embedded target, you may reach for a lightweight RTOS like [FreeRTOS], which gives you full threads without much work.
+The [age-old][millis1] [question][millis2] [when][millis3] [learning][millis4] [Arduino][millis5]:
+_"[How can I do][millis6] [multiple things at once][millis7]"_? When programming for full operating
+systems, like any desktop, mobile, or higher-end embedded platforms, the answer is easy—threads.
+They're built into the OS, and you typically _have_ to use them to take advantage of features like
+multiple CPU cores. Or, when programming for an embedded target, you may reach for a lightweight
+RTOS like [FreeRTOS], which gives you full threads without much work.
 
 But what if you have a 16MHz microcontroller with 2 KB of RAM?
 
-The Arduino Uno is known for being ubiquitous, cheap, and easy to program. Although there are more and more reasons to use competing products, such as the various ARM Cortex-M and Espressif boards (which I use almost exclusively), the Microchip (formerly Atmel) ATMega series is sometimes still preferred for low power applications, cutting cents off a BOM, and its widespread support.
+The Arduino Uno is known for being ubiquitous, cheap, and easy to program. Although there are more
+and more reasons to use competing products, such as the various ARM Cortex-M and Espressif boards
+(which I use almost exclusively), the Microchip (formerly Atmel) ATMega series is sometimes still
+preferred for low power applications, cutting cents off a BOM, and its widespread support.
 
-Typically, one checks in a loop repeatedly to see if the task is ready to activate. This can be checking if there's data in a serial buffer, if a certain time period has passed, or a GPIO pin has toggled. However, I'm going to present an alternative to doing this—`async`/`await`.
+Typically, one checks in a loop repeatedly to see if the task is ready to activate. This can be
+checking if there's data in a serial buffer, if a certain time period has passed, or a GPIO pin has
+toggled. However, I'm going to present an alternative to doing this—`async`/`await`.
 
 [millis1]: https://www.arduino.cc/en/Tutorial/BlinkWithoutDelay
-[millis2]: https://arduino.stackexchange.com/questions/49300/blink-without-delay-for-5-times-every-20-seconds
-[millis3]: https://arduino.stackexchange.com/questions/44497/how-to-flash-blink-i2c-lcd-backlight-without-delay-function
-[millis4]: https://arduino.stackexchange.com/questions/35436/arduino-blink-two-leds-without-delayamount-of-repetitions
+[millis2]:
+	https://arduino.stackexchange.com/questions/49300/blink-without-delay-for-5-times-every-20-seconds
+[millis3]:
+	https://arduino.stackexchange.com/questions/44497/how-to-flash-blink-i2c-lcd-backlight-without-delay-function
+[millis4]:
+	https://arduino.stackexchange.com/questions/35436/arduino-blink-two-leds-without-delayamount-of-repetitions
 [millis5]: https://arduino.stackexchange.com/questions/37032/how-to-blink-2-led-strips-without-delay
 [millis6]: https://arduino.stackexchange.com/questions/73164/blink-not-working
-[millis7]: https://arduino.stackexchange.com/questions/49950/how-to-replace-the-delay-function-in-my-code
-[FreeRTOS]: https://freertos.org/
+[millis7]:
+	https://arduino.stackexchange.com/questions/49950/how-to-replace-the-delay-function-in-my-code
+[freertos]: https://freertos.org/
 
 # What even is `async`/`await`, anyways?
 
-Many modern languages are implementing `async`/`await`. C# was one of the first big languages to do it, and then Python, JavaScript, Dart, Kotlin quickly followed. The big difference between threads and `async` functions is that `async`hronous code is handled by the program itself, usually cooperatively, while synchronous operations on threads rely on the OS to do it. The first obvious reason for it, then, is when threads aren't available—just like what we're about to get into soon. However, asynchronous code is typically faster than synchronous code because it is able to avoid the overhead of spawning threads and context switches, as well as the memory overhead, as the amount of space needed on the stack can be calculated ahead of time.
+Many modern languages are implementing `async`/`await`. C# was one of the first big languages to do
+it, and then Python, JavaScript, Dart, Kotlin quickly followed. The big difference between threads
+and `async` functions is that `async`hronous code is handled by the program itself, usually
+cooperatively, while synchronous operations on threads rely on the OS to do it. The first obvious
+reason for it, then, is when threads aren't available—just like what we're about to get into soon.
+However, asynchronous code is typically faster than synchronous code because it is able to avoid the
+overhead of spawning threads and context switches, as well as the memory overhead, as the amount of
+space needed on the stack can be calculated ahead of time.
 
-Internally, the compiler turns the code into a state machine, typically using the language's generators feature if it has one. Here, every time you write `.await` and the data is not available immediately, the compiler inserts a `return` statement, and adds a parameter that allows you to jump right back to where it was. Rust uses `Pin`ning, where it is guaranteed that the generated struct that holds the stack will always be in the same place in memory at all times. This avoids a problem where a pointer is taken to a local variable, the function returns and comes back, and is suddenly pointing to something completely different.
+Internally, the compiler turns the code into a state machine, typically using the language's
+generators feature if it has one. Here, every time you write `.await` and the data is not available
+immediately, the compiler inserts a `return` statement, and adds a parameter that allows you to jump
+right back to where it was. Rust uses `Pin`ning, where it is guaranteed that the generated struct
+that holds the stack will always be in the same place in memory at all times. This avoids a problem
+where a pointer is taken to a local variable, the function returns and comes back, and is suddenly
+pointing to something completely different.
 
 # Prior work
 
-C++20 has similar features to Rust's `async`/`await` with the `co_await` keyword, although the [available documentation][co-awaiting-coroutines] is [not quite as good as Rust's][async-book]. However, there's a total of... [1 search result][co_await_arduino] on the Arduino forums, *and* it's in German with no code. And even if there *was* code, it would be largely unaccessable as Arduino ships with an old compiler:
+C++20 has similar features to Rust's `async`/`await` with the `co_await` keyword, although the
+[available documentation][co-awaiting-coroutines] is [not quite as good as Rust's][async-book].
+However, there's a total of... [1 search result][co_await_arduino] on the Arduino forums, _and_ it's
+in German with no code. And even if there _was_ code, it would be largely unaccessable as Arduino
+ships with an old compiler:
 
 ```bash
 ❱ ~/.arduino15/packages/arduino/tools/avr-gcc/*/bin/avr-gcc --version
@@ -41,7 +79,8 @@ avr-gcc (GCC) 7.3.0
 Copyright (C) 2017 Free Software Foundation, Inc.
 ```
 
-GCC 7.3.0 ships with ["almost full support"][cpp-17] for C++17 (although not by default), but a total of 0 C++20 additions. And if you're on PlatformIO, you'll have even less luck:
+GCC 7.3.0 ships with ["almost full support"][cpp-17] for C++17 (although not by default), but a
+total of 0 C++20 additions. And if you're on PlatformIO, you'll have even less luck:
 
 ```bash
 ❱ ~/.platformio/packages/toolchain-atmelavr/bin/avr-gcc --version
@@ -49,7 +88,9 @@ avr-gcc (AVR_8_bit_GNU_Toolchain_3.6.2_1759) 5.4.0
 Copyright (C) 2015 Free Software Foundation, Inc.
 ```
 
-However, Rust has been able to compile `async`/`await` code for [almost a year now on the *stable compiler build*][async-await-stable]. There's been steadily increasing interest in using these features on embedded platforms with Rust, and many projects have been using it as a result.
+However, Rust has been able to compile `async`/`await` code for [almost a year now on the _stable
+compiler build_][async-await-stable]. There's been steadily increasing interest in using these
+features on embedded platforms with Rust, and many projects have been using it as a result.
 
 [co-awaiting-coroutines]: https://blog.panicsoftware.com/co_awaiting-coroutines/
 [async-book]: https://rust-lang.github.io/async-book/02_execution/04_executor.html
@@ -59,32 +100,50 @@ However, Rust has been able to compile `async`/`await` code for [almost a year n
 
 ## Pseudo-`async`/`await`
 
-These libraries actually implement a *very* similar thing to `async`/`await` with a state machine, and jumping to different positions in code based on where it's already been. For example, [AceRoutine] has a macro, `COROUTINE`, that internally converts the function into a state machine that jumps to different places using `goto`. This is actually almost identical to how tools like Babel in the JavaScript world convert `async` functions to traditional functions that can be used with old browsers.
+These libraries actually implement a _very_ similar thing to `async`/`await` with a state machine,
+and jumping to different positions in code based on where it's already been. For example,
+[AceRoutine] has a macro, `COROUTINE`, that internally converts the function into a state machine
+that jumps to different places using `goto`. This is actually almost identical to how tools like
+Babel in the JavaScript world convert `async` functions to traditional functions that can be used
+with old browsers.
 
 However, there are a few very critical problems:
-* **Local variables are not preserved across yields**.
-* You can't use certain statements in some libraries (not AceRoutine), such as `switch`.
-* Destructors don't run properly, and will **`free` uninitialized memory** if not done correctly (due to the first point).
-* Tasks can't return values.
 
-These limitations are because simple preprocessor macros, which is the only option in C/C++, are only "glorified copy-paste", and have no real computing power. Although `async` is built into the Rust compiler, it wasn't before, and a (less-than-ideal, but still usable) macro could implement most of the feature itself. Hopefully, new C++20 features will lead to more use in the embedded world.
+-   **Local variables are not preserved across yields**.
+-   You can't use certain statements in some libraries (not AceRoutine), such as `switch`.
+-   Destructors don't run properly, and will **`free` uninitialized memory** if not done correctly
+    (due to the first point).
+-   Tasks can't return values.
 
-[AceRoutine]: https://github.com/bxparks/AceRoutine
+These limitations are because simple preprocessor macros, which is the only option in C/C++, are
+only "glorified copy-paste", and have no real computing power. Although `async` is built into the
+Rust compiler, it wasn't before, and a (less-than-ideal, but still usable) macro could implement
+most of the feature itself. Hopefully, new C++20 features will lead to more use in the embedded
+world.
+
+[aceroutine]: https://github.com/bxparks/AceRoutine
 
 # Putting it together
 
 ## Getting started
 
-It looks like there's a few packages (known as "crates" in the Rust world) to interface with the hardware:
-* [ruduino], which only supports the Arduino Uno
-* [avr-device], which provides low-level hardware control
-* [avr-hal], which provides higher-level board and MCU support, and depends on avr-device
+It looks like there's a few packages (known as "crates" in the Rust world) to interface with the
+hardware:
 
-Although [ruduino] is by the avr-rust team that worked on getting Rust working on AVR, I ultimately decided to go with [avr-hal]:
-* It supports many more boards, and has a structure that allows it to expand further
-* It supports [embedded-hal], which allows us to share code between boards: for example, the [`apa102_spi`] crate will let us control APA102 LED strips on an Arduino Uno and a Raspberry Pi running Linux, using the exact same code!
-  * embedded-hal also has a bigger focus on nonblocking operations, which is exactly what we're looking for
-* It has a cleaner and safer API
+-   [ruduino], which only supports the Arduino Uno
+-   [avr-device], which provides low-level hardware control
+-   [avr-hal], which provides higher-level board and MCU support, and depends on avr-device
+
+Although [ruduino] is by the avr-rust team that worked on getting Rust working on AVR, I ultimately
+decided to go with [avr-hal]:
+
+-   It supports many more boards, and has a structure that allows it to expand further
+-   It supports [embedded-hal], which allows us to share code between boards: for example, the
+    [`apa102_spi`] crate will let us control APA102 LED strips on an Arduino Uno and a Raspberry Pi
+    running Linux, using the exact same code!
+    -   embedded-hal also has a bigger focus on nonblocking operations, which is exactly what we're
+        looking for
+-   It has a cleaner and safer API
 
 To set that up:
 
@@ -121,13 +180,18 @@ We can compile by running
 cargo +nightly-2020-07-24 build -Z build-std=core --release --target avr-atmega328p.json
 ```
 
-(just `+nightly` when `rustfmt` is available for nightly builds after 2020-07-24). Then, to upload it to a device, enable "Show verbose output during: upload" in the Arduino IDE. Observe the build logs for an `avrdude` command—it should look something like:
+(just `+nightly` when `rustfmt` is available for nightly builds after 2020-07-24). Then, to upload
+it to a device, enable "Show verbose output during: upload" in the Arduino IDE. Observe the build
+logs for an `avrdude` command—it should look something like:
 
 ```bash
 /path/to/.arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude -C/path/to/.arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf -v -patmega328p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:/tmp/arduino_build_721874/Blink.ino.hex:i
 ```
 
-Copy that command, but delete everything after `-Uflash:w:`. Then, without spaces, add the path to your binary. This will typically be `target/avr-atmega328p/release/project_name.elf`, or `target/avr-atmega328p/release/examples/example_name.elf`. Finally, add `:e`. Your final command will probably look something like:
+Copy that command, but delete everything after `-Uflash:w:`. Then, without spaces, add the path to
+your binary. This will typically be `target/avr-atmega328p/release/project_name.elf`, or
+`target/avr-atmega328p/release/examples/example_name.elf`. Finally, add `:e`. Your final command
+will probably look something like:
 
 ```bash
 /path/to/.arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude -C/path/to/.arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf -v -patmega328p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:target/avr-atmega328p/release/project_name.elf:e
@@ -135,18 +199,23 @@ Copy that command, but delete everything after `-Uflash:w:`. Then, without space
 
 > ### What about converting to hex first?
 >
-> Arduino typically converts the compiled binary to raw hex, and many AVR-Rust projects have [followed that pattern][avr-objcopy]. However, there's generally no need to do that, as `avrdude` has the ability to upload ELF binaries directly.
+> Arduino typically converts the compiled binary to raw hex, and many AVR-Rust projects have
+> [followed that pattern][avr-objcopy]. However, there's generally no need to do that, as `avrdude`
+> has the ability to upload ELF binaries directly.
 >
 > [avr-objcopy]: https://github.com/Rahix/avr-hal/blob/bfc5dfe67107a68b4a673e54532354af126cb3ba/mkhex.sh#L32
 
 ## Onto `async` operations
 
-As I mentioned earlier, [embedded-hal] is implemented in such a way that asynchronous operations is quite easy. When you attempt to read or write a value, you can get three results:
-* `WouldBlock`: I can't complete this operation right now.
-* `Ok`: The operation succeeded. If reading something, this gives you the read value.
-* `Err`: An error occurred while performing this operation.
+As I mentioned earlier, [embedded-hal] is implemented in such a way that asynchronous operations is
+quite easy. When you attempt to read or write a value, you can get three results:
 
-This maps very nicely to Rust's `Future` trait, which is used to implement asynchronous code. For example, reading from a serial port is implemented like this:
+-   `WouldBlock`: I can't complete this operation right now.
+-   `Ok`: The operation succeeded. If reading something, this gives you the read value.
+-   `Err`: An error occurred while performing this operation.
+
+This maps very nicely to Rust's `Future` trait, which is used to implement asynchronous code. For
+example, reading from a serial port is implemented like this:
 
 ```rust
 fn poll_read(
@@ -169,17 +238,32 @@ fn poll_read(
 }
 ```
 
-Although there's a bit of weirdness in terms of checking if the buffer is big enough, for the most part, this works pretty well.
+Although there's a bit of weirdness in terms of checking if the buffer is big enough, for the most
+part, this works pretty well.
 
 > ### Why do I always return 1 byte read?
 >
-> I'm mostly mirroring the `AsyncRead` and `AsyncWrite` in the `futures` crate, which typically is used on machines with full operating systems. Typically, the overhead of a syscall is somewhat high, so you might request e.g. 1024 bytes at a time. Obviously, that isn't the case for an 8-bit MCU. However, I'm keeping that pattern for ease of porting and to allow for networking, e.g. the Arduino Ethernet shield.
+> I'm mostly mirroring the `AsyncRead` and `AsyncWrite` in the `futures` crate, which typically is
+> used on machines with full operating systems. Typically, the overhead of a syscall is somewhat
+> high, so you might request e.g. 1024 bytes at a time. Obviously, that isn't the case for an 8-bit
+> MCU. However, I'm keeping that pattern for ease of porting and to allow for networking, e.g. the
+> Arduino Ethernet shield.
 
-Then, I copied and pasted the `AsyncReadExt` and `AsyncWriteExt` traits from the `futures` crate as well. The way this is set up is that you just implement the low-level functions, and the `Ext` traits take care of the more user-friendly functions. This is done instead of default implementations to allow the main trait to be small in case it is added to the standard library, much like how `Future` is in `std`/`core`, but many functions require the extension trait `FutureExt` from the `futures` crate. The functions that `AsyncReadExt` and the like provide allow for tasks like reading and writing a fixed number of bytes, and `await`ing until that is complete.
+Then, I copied and pasted the `AsyncReadExt` and `AsyncWriteExt` traits from the `futures` crate as
+well. The way this is set up is that you just implement the low-level functions, and the `Ext`
+traits take care of the more user-friendly functions. This is done instead of default
+implementations to allow the main trait to be small in case it is added to the standard library,
+much like how `Future` is in `std`/`core`, but many functions require the extension trait
+`FutureExt` from the `futures` crate. The functions that `AsyncReadExt` and the like provide allow
+for tasks like reading and writing a fixed number of bytes, and `await`ing until that is complete.
 
 ## Writing an executor
 
-Thankfully, there's a few places we can get code from—the Rust embedded team has been working on a [generic executor][async-embedded-executor], and [I have my own executor][ndless-async] that I've used for third-party code on TI calculators. I started off with a way to safely share state between interrupts. Typically, this is done with atomic instructions, but AVR does not have those (or necessarily have a need for it, as it is single-core). So, I used `volatile` operations:
+Thankfully, there's a few places we can get code from—the Rust embedded team has been working on a
+[generic executor][async-embedded-executor], and [I have my own executor][ndless-async] that I've
+used for third-party code on TI calculators. I started off with a way to safely share state between
+interrupts. Typically, this is done with atomic instructions, but AVR does not have those (or
+necessarily have a need for it, as it is single-core). So, I used `volatile` operations:
 
 ```rust
 #[derive(Debug)]
@@ -203,14 +287,20 @@ impl<T: Copy> Volatile<T> {
 
 > ### Why not the `vcell` crate?
 >
-> The above code is functionally identical to the [`VolatileCell`] that [`vcell`] provides—in fact, I wrote the above code and realized that it is *almost identical* to that crate. However, I will probably want more control in the future, as the above code is **unsound** if used with a type that is bigger than 1 byte. This is because AVR can write or read one byte in one instruction, so if an interrupt occurs, it is either written or not. In the future, I'd like to expand it to disable interrupts when writing more than 1 byte, so state can be safely shared between contexts.
+> The above code is functionally identical to the [`VolatileCell`] that [`vcell`] provides—in fact,
+> I wrote the above code and realized that it is _almost identical_ to that crate. However, I will
+> probably want more control in the future, as the above code is **unsound** if used with a type
+> that is bigger than 1 byte. This is because AVR can write or read one byte in one instruction, so
+> if an interrupt occurs, it is either written or not. In the future, I'd like to expand it to
+> disable interrupts when writing more than 1 byte, so state can be safely shared between contexts.
 >
 > [`vcell`]: https://docs.rs/vcell/
 > [`VolatileCell`]: https://docs.rs/vcell/0.1.*/vcell/struct.VolatileCell.html
 
 ### Creating a VTable
 
-We need to tell Rust how it can wake up a task. So, doing some copy-pasting from [async-on-embedded][async-embedded-executor]:
+We need to tell Rust how it can wake up a task. So, doing some copy-pasting from
+[async-on-embedded][async-embedded-executor]:
 
 ```rust
 // NOTE `*const ()` is &Volatile<bool>
@@ -232,7 +322,8 @@ static VTABLE: RawWakerVTable = {
 };
 ```
 
-Here, I adapted the code to use my own synchronization code instead of `AtomicBool`, which we don't have access to.
+Here, I adapted the code to use my own synchronization code instead of `AtomicBool`, which we don't
+have access to.
 
 ### The `block_on` function
 
@@ -261,25 +352,33 @@ pub fn block_on<T>(task: impl Future<Output = T>) -> T {
 }
 ```
 
-This function will accept a `Future`, which is typically automatically generated when writing an `async` block in Rust. Then, it will poll it. The task will either say that it's done right away, or register itself to wake up (via the `waker`) when it's ready. Then, it gets polled again, continuing the cycle.
+This function will accept a `Future`, which is typically automatically generated when writing an
+`async` block in Rust. Then, it will poll it. The task will either say that it's done right away, or
+register itself to wake up (via the `waker`) when it's ready. Then, it gets polled again, continuing
+the cycle.
 
-However, I don't have waking up working quite yet, so let's comment out the part where I mark it as not ready:
+However, I don't have waking up working quite yet, so let's comment out the part where I mark it as
+not ready:
 
 ```diff{numberLines: 15}
 -    ready.write(false);
 + // ready.write(false);
 ```
 
-This will just poll the task in a busy loop. This isn't great for power usage, but is easy to implement.
+This will just poll the task in a busy loop. This isn't great for power usage, but is easy to
+implement.
 
-[async-embedded-executor]: https://github.com/rust-embedded-community/async-on-embedded/blob/master/async-embedded/src/executor.rs
+[async-embedded-executor]:
+	https://github.com/rust-embedded-community/async-on-embedded/blob/master/async-embedded/src/executor.rs
 [ndless-async]: https://github.com/lights0123/ndless-rs/tree/master/ndless-async
 
 # Writing asynchronous code!
 
 ## A simple demo
 
-Now that we have the low-level stuff working, we can get on to writing asynchronous code! Let's start with a [basic, single-task only example][example-single-task] just to make sure everything works:
+Now that we have the low-level stuff working, we can get on to writing asynchronous code! Let's
+start with a [basic, single-task only example][example-single-task] just to make sure everything
+works:
 
 ```rust
 #[no_mangle]
@@ -368,7 +467,8 @@ Hello World!
 
 ## A bit more powerful
 
-Great—that worked! Now, let's try doing multiple things. Let's do [both SPI communication and reading UART data now][example-serial]. Starting out with getting our peripherals:
+Great—that worked! Now, let's try doing multiple things. Let's do [both SPI communication and
+reading UART data now][example-serial]. Starting out with getting our peripherals:
 
 ```rust
 let dp = arduino_uno::Peripherals::take().unwrap();
@@ -412,7 +512,10 @@ let serial_lock = Cell::new(false);
 
 > ### Why do we need to lock?
 >
-> Because we may have multiple tasks trying to write to the same serial port at the same time, we need to add synchronization so that doesn't happen. Ideally, I would use a `Mutex` that handles all this for us, but I haven't written one yet (or moreso copied-and-pasted from [one that already exists][unsync-mutex]).
+> Because we may have multiple tasks trying to write to the same serial port at the same time, we
+> need to add synchronization so that doesn't happen. Ideally, I would use a `Mutex` that handles
+> all this for us, but I haven't written one yet (or moreso copied-and-pasted from [one that already
+> exists][unsync-mutex]).
 
 Creating a serial loop:
 
@@ -434,7 +537,7 @@ let serial_loop = async {
 };
 ```
 
-> Note: this will not actually *run* the loop. That comes later.
+> Note: this will not actually _run_ the loop. That comes later.
 
 Creating an SPI loop:
 
@@ -463,7 +566,9 @@ let spi_loop = async {
 
 > ### What's with all the yielding?
 >
-> As Rust implements *cooperative* multitasking, we need to explicitly give control back to other tasks. Otherwise, we'd be in a loop waiting for the other task to be done writing, without ever giving it a chance to write!
+> As Rust implements _cooperative_ multitasking, we need to explicitly give control back to other
+> tasks. Otherwise, we'd be in a loop waiting for the other task to be done writing, without ever
+> giving it a chance to write!
 
 Finally running it:
 
@@ -533,17 +638,26 @@ wrote a!
 --- exit ---
 ```
 
-Here, I pressed a key on my keyboard to send a character, which resulted in the reply of "hello!". This successfully demonstrates multiple tasks running at the same time.
+Here, I pressed a key on my keyboard to send a character, which resulted in the reply of "hello!".
+This successfully demonstrates multiple tasks running at the same time.
 
 [example-single-task]: https://github.com/lights0123/async-avr/blob/main/examples/single-task.rs
 [example-serial]: https://github.com/lights0123/async-avr/blob/main/examples/serial.rs
-[unsync-mutex]: https://github.com/rust-embedded-community/async-on-embedded/blob/master/async-embedded/src/unsync/mutex.rs
+[unsync-mutex]:
+	https://github.com/rust-embedded-community/async-on-embedded/blob/master/async-embedded/src/unsync/mutex.rs
 
 # To Do
 
-Right now, this is far from being done and usable. I only have basic for two peripherals: UART and SPI. More work is required for timers, but once that is done, using `async`/`await` on an Arduino will be *very* nice—scheduling a periodic task would be as easy as surrounding it in a `timeout` function, and waiting for e.g. serial data would not block anything else. Additionally, getting interrupts to work will allow the MCU to go to sleep while waiting for something to occur, saving power.
+Right now, this is far from being done and usable. I only have basic for two peripherals: UART and
+SPI. More work is required for timers, but once that is done, using `async`/`await` on an Arduino
+will be _very_ nice—scheduling a periodic task would be as easy as surrounding it in a `timeout`
+function, and waiting for e.g. serial data would not block anything else. Additionally, getting
+interrupts to work will allow the MCU to go to sleep while waiting for something to occur, saving
+power.
 
-However, `async`/`await` could definitely change the way Arduino code is written. It doesn't have to be in Rust (although I would definitely not complain :) ), but this style could allow for easier to write *and* more power efficient projects.
+However, `async`/`await` could definitely change the way Arduino code is written. It doesn't have to
+be in Rust (although I would definitely not complain :) ), but this style could allow for easier to
+write _and_ more power efficient projects.
 
 # Final code
 
