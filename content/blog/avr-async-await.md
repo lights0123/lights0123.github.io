@@ -655,9 +655,14 @@ function, and waiting for e.g. serial data would not block anything else. Additi
 interrupts to work will allow the MCU to go to sleep while waiting for something to occur, saving
 power.
 
+Currently, effort on this is blocked on [an LLVM issue that prevents calling function
+pointers][function-pointers]. Until that is fixed, busy-loop polling is the best we can do.
+
 However, `async`/`await` could definitely change the way Arduino code is written. It doesn't have to
 be in Rust (although I would definitely not complain :) ), but this style could allow for easier to
 write _and_ more power efficient projects.
+
+[function-pointers]: https://gitter.im/avr-rust/Lobby?at=5f1ca63fbc41f3681724bbba
 
 # Final code
 
