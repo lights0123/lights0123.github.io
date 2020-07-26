@@ -544,6 +544,8 @@ will be <em>very</em> nice—scheduling a periodic task would be as easy as surr
 function, and waiting for e.g. serial data would not block anything else. Additionally, getting
 interrupts to work will allow the <abbr title="Microcontroller">MCU</abbr> to go to sleep while waiting for something to occur, saving
 power.</p>
+<p>Currently, effort on this is blocked on <a href="https://gitter.im/avr-rust/Lobby?at=5f1ca63fbc41f3681724bbba" target="_blank" rel="nofollow noopener noreferrer">an LLVM issue that prevents calling function
+pointers</a>. Until that is fixed, busy-loop polling is the best we can do.</p>
 <p>However, <code class="language-text">async</code>/<code class="language-text">await</code> could definitely change the way Arduino code is written. It doesn't have to
 be in Rust (although I would definitely not complain :) ), but this style could allow for easier to
 write <em>and</em> more power efficient projects.</p>
