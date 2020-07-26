@@ -22,6 +22,7 @@ class ThemeImpl extends Vue implements Theme {
 
 	toggle() {
 		const hasDarkMode = document.documentElement.classList.contains('dark');
+		window._paq.push(['trackEvent', 'Color', hasDarkMode ? 'toLight' : 'toDark']);
 		// Toggle dark mode on click.
 		return this.setDarkMode(!hasDarkMode);
 	}
