@@ -5,13 +5,14 @@ description:
     of Rust to Arduino: async/await. Asynchronous code allows for doing (seemingly) multiple things
     at once, without the memory or CPU overhead of threads."
 date: 2020-07-25
+updated: 2020-07-26
 ---
 
 With the recent ability for Rust to compile for AVR microcontrollers, I thought that it's time for
 me to bring my favorite feature of Rust to Arduino: async/await.
 
 > **TL;DR:** final code is at https://github.com/lights0123/async-avr. [Here's an example of a
-> simple task that does two things at once][example-serial]. 
+> simple task that does two things at once][example-serial].
 
 # Introduction
 
@@ -147,23 +148,11 @@ decided to go with [avr-hal]:
 
 To set that up:
 
-```bash
-# rustfmt is not yet available for Rust since this was written, so we need to pass --force
-rustup install --force nightly-2020-07-24
-rustup install nightly
-rustup +nightly component add rustfmt
-rustup +nightly-2020-07-24 component add rust-src
-cargo install form svd2rust atdf2svd
-pip3 install --user pyyaml
-```
-
-In the future, when `rustfmt` is available for nightly builds after 2020-07-24:
+**(Update 2020-07-26)**: this is much simpler now with the latest nightly. All that is required:
 
 ```bash
 rustup install nightly
-rustup +nightly component add rustfmt rust-src
-cargo install form svd2rust atdf2svd
-pip3 install --user pyyaml
+rustup +nightly component add rust-src
 ```
 
 [ruduino]: https://github.com/avr-rust/ruduino
@@ -177,12 +166,24 @@ pip3 install --user pyyaml
 We can compile by running
 
 ```bash
-cargo +nightly-2020-07-24 build -Z build-std=core --release --target avr-atmega328p.json
+cargo +nightly build -Z build-std=core --release --target avr-atmega328p.json
+# or, in my repository which has some helpers configured
+cargo +nightly build --release
 ```
 
-(just `+nightly` when `rustfmt` is available for nightly builds after 2020-07-24). Then, to upload
-it to a device, enable "Show verbose output during: upload" in the Arduino IDE. Observe the build
-logs for an `avrdude` command—it should look something like:
+Then, to upload it to a device, assuming that you have `avrdude` installed, run:
+
+```bash
+avrdude -v -patmega328p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:target/avr-atmega328p/release/examples/serial.elf:e
+```
+
+Change the upload path (`target/avr-atmega328p/release/examples/serial.elf`) to meet what you want
+to upload.
+
+## If you only have the Arduino IDE installed
+
+Enable "Show verbose output during: upload" in the Arduino IDE. Observe the build logs for an
+`avrdude` command—it should look something like:
 
 ```bash
 /path/to/.arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude -C/path/to/.arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf -v -patmega328p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:/tmp/arduino_build_721874/Blink.ino.hex:i
@@ -202,8 +203,8 @@ will probably look something like:
 > Arduino typically converts the compiled binary to raw hex, and many AVR-Rust projects have
 > [followed that pattern][avr-objcopy]. However, there's generally no need to do that, as `avrdude`
 > has the ability to upload ELF binaries directly.
->
-> [avr-objcopy]: https://github.com/Rahix/avr-hal/blob/bfc5dfe67107a68b4a673e54532354af126cb3ba/mkhex.sh#L32
+
+[avr-objcopy]: https://github.com/Rahix/avr-hal/blob/bfc5dfe67107a68b4a673e54532354af126cb3ba/mkhex.sh#L32
 
 ## Onto `async` operations
 
@@ -293,9 +294,9 @@ impl<T: Copy> Volatile<T> {
 > that is bigger than 1 byte. This is because AVR can write or read one byte in one instruction, so
 > if an interrupt occurs, it is either written or not. In the future, I'd like to expand it to
 > disable interrupts when writing more than 1 byte, so state can be safely shared between contexts.
->
-> [`vcell`]: https://docs.rs/vcell/
-> [`VolatileCell`]: https://docs.rs/vcell/0.1.*/vcell/struct.VolatileCell.html
+
+[`vcell`]: https://docs.rs/vcell/
+[`VolatileCell`]: https://docs.rs/vcell/0.1.*/vcell/struct.VolatileCell.html
 
 ### Creating a VTable
 
@@ -357,8 +358,9 @@ This function will accept a `Future`, which is typically automatically generated
 register itself to wake up (via the `waker`) when it's ready. Then, it gets polled again, continuing
 the cycle.
 
-However, I don't have waking up working quite yet, so let's comment out the part where I mark it as
-not ready:
+However, [LLVM has a bug][function-pointers] that crashes the MCU when calling a function pointer.
+Unfortunately, that's entirely how `Waker`s are implemented, so let's comment out the part where I
+mark it as not ready:
 
 ```diff{numberLines: 15}
 -    ready.write(false);
@@ -407,7 +409,7 @@ pub extern "C" fn main() -> ! {
 Compile and upload it:
 
 ```bash
-❱ cargo +nightly-2020-07-24 build -Z build-std=core --example single-task --release && avrdude -v -patmega328p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:target/avr-atmega328p/release/examples/single-task.elf:e
+❱ cargo +nightly build --example single-task --release && avrdude -v -patmega328p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:target/avr-atmega328p/release/examples/single-task.elf:e
    Compiling async-avr v0.1.0 (/home/lights0123/IdeaProjects/async-avr)
     Finished release [optimized] target(s) in 0.28s
 
@@ -579,7 +581,7 @@ block_on(async { futures_util::join!(serial_loop, spi_loop) });
 Compile and upload it:
 
 ```bash
-❱ cargo +nightly-2020-07-24 build -Z build-std=core --example serial --release && avrdude -v -patmega328p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:target/avr-atmega328p/release/examples/serial.elf:e
+❱ cargo +nightly build --example serial && avrdude -v -patmega328p -carduino -P/dev/ttyACM0 -b115200 -D -Uflash:w:target/avr-atmega328p/release/examples/serial.elf:e
    Compiling async-avr v0.1.0 (/home/lights0123/IdeaProjects/async-avr)
     Finished release [optimized] target(s) in 0.28s
 
@@ -681,4 +683,3 @@ https://github.com/nh2/quadcopter-simulation/blob/8a3652b8a704877156e91c0691ce8c
 *[BOM]: Bill of Materials
 *[MCU]: Microcontroller
 *[GPIO]: General-Purpose Input/Output
-

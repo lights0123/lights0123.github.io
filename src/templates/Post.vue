@@ -8,6 +8,10 @@
 				<h1 class="text-5xl mb-0">{{$page.post.title}}</h1>
 				<p class="text-gray-600 text-sm mb-6">
 					<time :datetime="$page.post.rawDate">{{ $page.post.date }}</time>
+					<span class="italic" v-if="$page.post.updated">
+						· Updated
+						<time :datetime="$page.post.rawUpdated">{{ $page.post.updated }}</time>
+					</span>
 					· <i>{{ $page.post.timeToRead }} min read</i>
 				</p>
 				<div class="content mb-10">
@@ -61,7 +65,7 @@ export default {
 				},
 				{
 					property: 'article:modified_time',
-					content: this.$page.post.rawDate,
+					content: this.$page.post.rawUpdated || this.$page.post.rawDate,
 				},
 			],
 			script: [{
@@ -76,7 +80,7 @@ export default {
 					headline: this.$page.post.title,
 					description: this.$page.post.description,
 					datePublished: this.$page.post.rawDate,
-					dateModified: this.$page.post.rawDate,
+					dateModified: this.$page.post.rawUpdated || this.$page.post.rawDate,
 					author: {
 						'@type': 'Person',
 						name: this.$static.metadata.siteName,
@@ -101,6 +105,7 @@ export default {
 		margin-bottom: 1em;
 		word-wrap: break-word;
 	}
+
 	> p p code {
 		word-wrap: break-word;
 	}
@@ -182,6 +187,8 @@ query Post ($path: String!) {
 		}
 		date (format: "MMMM D, YYYY")
 		rawDate: date
+		updated (format: "MMMM D, YYYY")
+		rawUpdated: updated
 		timeToRead
 	}
 }
