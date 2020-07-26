@@ -13,7 +13,12 @@
 import { Component, Vue } from 'vue-property-decorator';
 import AlertTriangle from 'feather-icons/dist/icons/alert-triangle.svg';
 
-@Component({ components: { AlertTriangle } })
+@Component({
+	components: { AlertTriangle },
+	metaInfo: {
+		title: 'Page Not Found',
+	},
+})
 export default class Page404 extends Vue {}
 </script>
 
