@@ -10,3 +10,7 @@ export default function(Vue) {
 	// Set default layout as a global component
 	Vue.component('Layout', DefaultLayout);
 }
+if (process.isClient) {
+	if ((/instagram/i.test(navigator.userAgent))) _paq.push(['setCustomVariable', 1, 'Browser', 'Instagram', 'visit']);
+	if ((/snapchat/i.test(navigator.userAgent))) _paq.push(['setCustomVariable', 1, 'Browser', 'Snapchat', 'visit']);
+}
