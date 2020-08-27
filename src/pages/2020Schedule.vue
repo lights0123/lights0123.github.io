@@ -171,11 +171,15 @@ function addHalfClasses(periods: string[], start: 0 | 1) {
   },
 })
 export default class Schedule2020 extends Vue {
-  warnBrowser = process.isClient && iOSNotSafari(navigator.userAgent);
+  warnBrowser: boolean | 'social' = false;
   includeWorkTime = true;
   includeConferences = true;
   periods = ['', '', '', '', '', '', '', ''];
   changed = false;
+
+  mounted() {
+    this.warnBrowser = iOSNotSafari(navigator.userAgent);
+  }
 
   @Watch('periods', { deep: true })
   onChange() {
