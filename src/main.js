@@ -11,6 +11,7 @@ export default function(Vue) {
 	Vue.component('Layout', DefaultLayout);
 }
 if (process.isClient) {
-	if ((/instagram/i.test(navigator.userAgent))) _paq.push(['setCustomVariable', 1, 'Browser', 'Instagram', 'visit']);
-	if ((/snapchat/i.test(navigator.userAgent))) _paq.push(['setCustomVariable', 1, 'Browser', 'Snapchat', 'visit']);
+	if (!window._paq) {window._paq = [];}
+	if ((/instagram/i.test(navigator.userAgent))) window._paq.push(['setCustomVariable', 1, 'Browser', 'Instagram', 'visit']);
+	if ((/snapchat/i.test(navigator.userAgent))) window._paq.push(['setCustomVariable', 1, 'Browser', 'Snapchat', 'visit']);
 }
