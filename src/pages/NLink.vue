@@ -10,16 +10,16 @@
     <h2 class="text-3xl">Download</h2>
     <div v-if="releases" class="grid xl:grid-cols-7 md:grid-cols-2 gap-4">
       <a :href="releases.msi" target="_blank" rel="noopener"
-         class="xl:col-span-2 py-3 bg-blue-700 flex justify-center text-white">
-        <Windows class="w-8 mr-4" />
+         class="xl:col-span-2 py-3 bg-blue-700 flex justify-center items-center text-white">
+        <Windows class="w-8 h-8 mr-4" />
         <div class="text-center">
           <p class="font-bold">Windows</p>
           <p>.msi</p>
         </div>
       </a>
       <a :href="releases.dmg" target="_blank" rel="noopener"
-         class="xl:col-span-2 py-3 bg-blue-700 flex justify-center text-white">
-        <Apple class="w-8 mr-4" />
+         class="xl:col-span-2 py-3 bg-blue-700 flex justify-center items-center text-white">
+        <Apple class="w-8 h-8 mr-4" />
         <div class="text-center">
           <p class="font-bold">macOS</p>
           <p>.dmg</p>
@@ -27,24 +27,26 @@
       </a>
       <div class="xl:col-span-2 grid grid-cols-2 gap-1">
         <a :href="releases.appimage" target="_blank" rel="noopener"
-           class="py-3 bg-blue-700 flex justify-center text-white">
-          <Linux class="w-8 mr-4" />
+           class="py-3 bg-blue-700 flex justify-center items-center text-white">
+          <Linux class="w-8 h-8 mr-4" />
           <div class="text-center">
             <p class="font-bold">Linux</p>
             <p>.AppImage</p>
           </div>
         </a>
-        <a :href="releases.deb" target="_blank" rel="noopener" class="py-3 bg-blue-700 flex justify-center text-white">
-          <Ubuntu class="w-8 mr-4" />
+        <a :href="releases.deb" target="_blank" rel="noopener"
+           class="py-3 bg-blue-700 flex justify-center items-center text-white">
+          <Ubuntu class="w-8 h-8 mr-4" />
           <div class="text-center">
             <p class="font-bold">Debian/Ubuntu</p>
             <p>.deb</p>
           </div>
         </a>
       </div>
-      <a class="py-3 bg-blue-700 flex justify-center text-white" href="https://github.com/lights0123/n-link"
+      <a class="py-3 bg-blue-700 flex justify-center items-center text-white"
+         href="https://github.com/lights0123/n-link"
          target="_blank" rel="noopener">
-        <Github class="w-8 mr-4" />
+        <Github class="w-8 h-8 mr-4" />
         <div class="text-center">
           <p class="font-bold">Source code</p>
           <p>GPL v3.0</p>
