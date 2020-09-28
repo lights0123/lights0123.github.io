@@ -37,7 +37,6 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import Github from 'feather-icons/dist/icons/github.svg';
 import ToggleDarkMode from '@/components/ToggleDarkMode.vue';
-import type from 'vue-router';
 @Component({
 	components: {
 		Github,

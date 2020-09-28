@@ -1,5 +1,7 @@
 declare module '*.vue' {
 	import Vue from 'vue';
+	import 'vue-router';
+	import 'vue-meta';
 	export default Vue;
 }
 declare module '*.svg' {
