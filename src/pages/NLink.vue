@@ -7,7 +7,7 @@
       Free, cross-platform, CX-II compatible computer linking program for the TI-Nspire.
     </p>
     <br>
-    <h2 class="text-3xl">Download</h2>
+    <h2 class="text-3xl">Download {{ releases ? releases.version : '' }}</h2>
     <div v-if="releases" class="grid xl:grid-cols-7 md:grid-cols-2 gap-4">
       <a :href="releases.msi" target="_blank" rel="noopener"
          class="xl:col-span-2 py-3 bg-blue-700 flex justify-center items-center text-white">
@@ -100,6 +100,8 @@
            rel="noopener">Vogtinator/libnspire#2</a>
       </p></li>
       <li>CLI on Windows</li>
+      <li>One-click Ndless installation</li>
+      <li>Automatic OS downloading</li>
     </ul>
     <h2 class="text-3xl mt-4">Installation Instructions</h2>
     <h3 class="text-2xl mt-4" id="windows">Windows</h3>
@@ -180,16 +182,17 @@ const description = 'Free, cross-platform, CX-II compatible computer linking pro
   },
 })
 export default class NLink extends Vue {
-  releases: { msi: string; dmg: string; appimage: string; deb: string } | null = null;
+  releases: { version: string; msi: string; dmg: string; appimage: string; deb: string } | null = null;
 
   async mounted() {
-    const { assets } = await (await fetch('https://api.github.com/repos/lights0123/n-link/releases/latest')).json() as { assets: Asset[] };
+    const { tag_name, assets } = await (await fetch('https://api.github.com/repos/lights0123/n-link/releases/latest')).json() as { tag_name: string; assets: Asset[] };
     const msi = assets.find(({ name }) => name.endsWith('msi'));
     const dmg = assets.find(({ name }) => name.endsWith('dmg'));
     const appimage = assets.find(({ name }) => name.endsWith('AppImage'));
     const deb = assets.find(({ name }) => name.endsWith('deb'));
     if (!msi || !dmg || !appimage || !deb) return;
     this.releases = {
+      version: tag_name,
       msi: msi.browser_download_url,
       dmg: dmg.browser_download_url,
       appimage: appimage.browser_download_url,
