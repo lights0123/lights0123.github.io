@@ -12,7 +12,7 @@
       <a href="https://n-link.lights0123.com" target="_blank" rel="noopener"
          class="xl:col-span-3 py-3 bg-gray-600 flex justify-center items-center text-white"
          :class="webUSB && 'bg-gradient'">
-        <Windows class="w-8 h-8 mr-4" />
+        <Chrome class="w-8 h-8 mr-4" />
         <div class="text-center">
           <p class="font-bold">Open on the Web</p>
           <p v-if="webUSB">Chrome-based browsers</p>
@@ -165,6 +165,7 @@ import Windows from '@/assets/windows.svg';
 import Linux from '@/assets/linux.svg';
 import Ubuntu from '@/assets/ubuntu.svg';
 import Github from '@/assets/github.svg';
+import Chrome from '@/assets/chrome.svg';
 import Logo from '@/assets/n-link/logo.svg';
 
 interface Asset {
@@ -174,7 +175,7 @@ interface Asset {
 
 const description = 'Free, cross-platform, CX-II compatible computer linking program for the TI-Nspire.';
 @Component({
-  components: { Apple, Windows, Linux, Ubuntu, Github, Logo },
+  components: { Apple, Windows, Linux, Ubuntu, Github, Chrome, Logo },
   metaInfo: {
     title: 'N-Link',
     meta: [
