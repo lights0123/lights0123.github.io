@@ -123,6 +123,9 @@
     </ul>
     <h2 class="text-3xl mt-4">Installation Instructions</h2>
     <h3 class="text-2xl mt-4" id="windows">Windows</h3>
+    <h3 class="text-xl mt-4">CX II</h3>
+    No additional installation required.
+    <h3 class="text-xl mt-4">Original CX and older</h3>
     <p class="my-2">N-Link requires some generic USB drivers, rather than the ones that TI provides. To install them,
       download <a href="https://zadig.akeo.ie/" target="_blank" rel="noopener">Zadig</a> and open it. First, select
       "Options" at the top and check "List All Devices":</p>

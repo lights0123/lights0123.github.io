@@ -59,12 +59,13 @@ export default {
 
 	watch: {
 		$route: function() {
-			if (process.isClient && window.location.hash) {
+		  if(!process.isClient) return;
+			if (window.location.hash) {
 				this.activeAnchor = window.location.hash;
 			}
 
 			// Clear the current observer.
-			this.observer.disconnect();
+			this.observer?.disconnect();
 
 			// And create another one for the next page.
 			this.$nextTick(this.initObserver);
