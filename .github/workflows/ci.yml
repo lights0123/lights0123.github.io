@@ -1,12 +1,12 @@
-name: GitHub Pages
-
+name: CI
 on:
   push:
-    branches:
-      - source
-
+    branches-ignore:
+      - 'dependabot/**'
+  pull_request:
 jobs:
-  deploy:
+  build:
+    name: Build
     runs-on: ubuntu-18.04
     timeout-minutes: 20
     steps:
@@ -26,19 +26,4 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn
       - run: |
-          rm .env
           yarn build
-        env:
-          GRIDSOME_FORM_URL: ${{ secrets.GRIDSOME_FORM_URL }}
-          GRIDSOME_EMAIL: ${{ secrets.GRIDSOME_EMAIL }}
-          MATOMO_HOST: ${{ secrets.MATOMO_HOST }}
-          MATOMO_SITE_ID: ${{ secrets.MATOMO_SITE_ID }}
-          GRIDSOME_MATOMO_IMAGE: ${{ secrets.GRIDSOME_MATOMO_IMAGE }}
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: master
-          cname: lights0123.com
