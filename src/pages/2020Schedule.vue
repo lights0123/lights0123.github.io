@@ -10,10 +10,13 @@
         Please re-open this website in Safari.
       </span>
     </div>
-    <h1 class="mt-8 mb-0">Shaker 2020 Quarter 1 Class Times</h1>
+    <p class="mt-8 bg-gradient text-white inline-block p-2 rounded text-xl">
+      <b class="mr-2">New</b> Updated for Quarter 2
+    </p>
+    <h1 class="mb-0">Shaker 2020 Quarter 2 Class Times</h1>
 
     <p class="mb-4">
-      Use this tool to see your class times for Shaker Heights High School 2020 Quarter 1, and export it to your
+      Use this tool to see your class times for Shaker Heights High School 2020 Quarter 2, and export it to your
       calendar. <span class="italic mb-3">Schedule from
       <a href="https://www.shaker.org/SampleSchedules.aspx" target="_blank" rel="noopener">shaker.org/SampleSchedules.aspx</a>
     </span>
@@ -76,42 +79,42 @@ function iOSNotSafari(userAgent: string) {
   return false;
 }
 
-const MONDAY_RECUR = 'FREQ=WEEKLY;BYDAY=MO;INTERVAL=1;UNTIL=20201031T040000Z';
-const TUESDAY_RECUR = 'FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;UNTIL=20201031T040000Z';
-const WEDNESDAY_RECUR = 'FREQ=WEEKLY;BYDAY=WE,FR;INTERVAL=1;UNTIL=20201031T040000Z';
+const MONDAY_RECUR = 'FREQ=WEEKLY;BYDAY=MO;INTERVAL=1;UNTIL=20210116T050000Z';
+const TUESDAY_RECUR = 'FREQ=WEEKLY;BYDAY=TU,TH;INTERVAL=1;UNTIL=20210116T050000Z';
+const WEDNESDAY_RECUR = 'FREQ=WEEKLY;BYDAY=WE,FR;INTERVAL=1;UNTIL=20210116T050000Z';
 
 const classes: ({ monday: DateArray } & ({ tuesday: DateArray } | { wednesday: DateArray }))[] = [
   {
-    monday: [2020, 8, 31, 8, 0],
-    tuesday: [2020, 9, 1, 8, 30],
+    monday: [2020, 11, 9, 8, 0],
+    tuesday: [2020, 11, 2, 8, 30],
   },
   {
-    monday: [2020, 8, 31, 8, 45],
-    wednesday: [2020, 9, 2, 8, 30],
+    monday: [2020, 11, 9, 8, 45],
+    wednesday: [2020, 11, 4, 8, 30],
   },
   {
-    monday: [2020, 8, 31, 9, 30],
-    tuesday: [2020, 9, 1, 10, 0],
+    monday: [2020, 11, 9, 9, 30],
+    tuesday: [2020, 11, 2, 10, 0],
   },
   {
-    monday: [2020, 8, 31, 10, 15],
-    wednesday: [2020, 9, 2, 10, 0],
+    monday: [2020, 11, 9, 10, 15],
+    wednesday: [2020, 11, 4, 10, 0],
   },
   {
-    monday: [2020, 8, 31, 11, 55],
-    tuesday: [2020, 9, 1, 12, 20],
+    monday: [2020, 11, 9, 11, 55],
+    tuesday: [2020, 11, 2, 12, 20],
   },
   {
-    monday: [2020, 8, 31, 12, 40],
-    wednesday: [2020, 9, 2, 12, 20],
+    monday: [2020, 11, 9, 12, 40],
+    wednesday: [2020, 11, 4, 12, 20],
   },
   {
-    monday: [2020, 8, 31, 13, 25],
-    tuesday: [2020, 9, 1, 13, 50],
+    monday: [2020, 11, 9, 13, 25],
+    tuesday: [2020, 11, 2, 13, 50],
   },
   {
-    monday: [2020, 8, 31, 14, 10],
-    wednesday: [2020, 9, 2, 13, 50],
+    monday: [2020, 11, 9, 14, 10],
+    wednesday: [2020, 11, 4, 13, 50],
   },
 ];
 
@@ -155,17 +158,17 @@ function addHalfClasses(periods: string[], start: 0 | 1) {
 @Component({
   // @ts-ignore
   metaInfo: {
-    title: 'Shaker 2020 Quarter 1 Class Times', meta: [{
+    title: 'Shaker 2020 Quarter 2 Class Times', meta: [{
       property: 'og:title',
-      content: 'Shaker 2020 Quarter 1 Class Times',
+      content: 'Shaker 2020 Quarter 2 Class Times',
     },
       {
         name: 'description',
-        content: 'See your class times for Shaker Heights High School 2020 Quarter 1, and export it to your calendar',
+        content: 'See your class times for Shaker Heights High School 2020 Quarter 2, and export it to your calendar',
       },
       {
         property: 'og:description',
-        content: 'See your class times for Shaker Heights High School 2020 Quarter 1, and export it to your calendar',
+        content: 'See your class times for Shaker Heights High School 2020 Quarter 2, and export it to your calendar',
         key: 'og:description',
       }],
   },
@@ -225,40 +228,40 @@ export default class Schedule2020 extends Vue {
     const events: EventAttributes[] = [];
     events.push({
       title: 'Well Check',
-      start: [2020, 9, 2, 15, 20],
+      start: [2020, 11, 4, 15, 20],
       duration: { minutes: 40 },
-      recurrenceRule: 'FREQ=WEEKLY;BYDAY=WE;INTERVAL=1;UNTIL=20201031T040000Z',
+      recurrenceRule: 'FREQ=WEEKLY;BYDAY=WE;INTERVAL=1;UNTIL=20210116T050000Z',
       busyStatus: 'BUSY',
     });
     if (this.includeWorkTime) {
       events.push({
         title: 'Independent Work Time',
-        start: [2020, 8, 31, 14, 55],
+        start: [2020, 11, 9, 14, 55],
         duration: { hours: 1, minutes: 5 },
-        recurrenceRule: 'FREQ=WEEKLY;BYDAY=MO;INTERVAL=1;UNTIL=20201031T040000Z',
+        recurrenceRule: 'FREQ=WEEKLY;BYDAY=MO;INTERVAL=1;UNTIL=20210116T050000Z',
         busyStatus: 'FREE',
       });
       events.push({
         title: 'Independent Work Time',
-        start: [2020, 9, 1, 8, 0],
+        start: [2020, 11, 2, 8, 0],
         duration: { minutes: 30 },
-        recurrenceRule: 'FREQ=WEEKLY;BYDAY=TU,WE;INTERVAL=1;UNTIL=20201031T040000Z',
+        recurrenceRule: 'FREQ=WEEKLY;BYDAY=TU,WE;INTERVAL=1;UNTIL=20210116T050000Z',
         busyStatus: 'FREE',
       });
     }
     if (this.includeConferences) {
       events.push({
         title: 'Conferences',
-        start: [2020, 9, 1, 15, 20],
+        start: [2020, 11, 2, 15, 20],
         duration: { minutes: 40 },
-        recurrenceRule: 'FREQ=WEEKLY;BYDAY=TU,TH,FR;INTERVAL=1;UNTIL=20201031T040000Z',
+        recurrenceRule: 'FREQ=WEEKLY;BYDAY=TU,TH,FR;INTERVAL=1;UNTIL=20210116T050000Z',
         busyStatus: 'FREE',
       });
       events.push({
         title: 'Conferences',
-        start: [2020, 9, 3, 8, 0],
+        start: [2020, 11, 5, 8, 0],
         duration: { minutes: 30 },
-        recurrenceRule: 'FREQ=WEEKLY;BYDAY=TH,FR;INTERVAL=1;UNTIL=20201031T040000Z',
+        recurrenceRule: 'FREQ=WEEKLY;BYDAY=TH,FR;INTERVAL=1;UNTIL=20210116T050000Z',
         busyStatus: 'FREE',
       });
     }
@@ -282,7 +285,7 @@ export default class Schedule2020 extends Vue {
       });
     }
     for (const event of events) {
-      event.calName = 'Shaker 2020 Quarter 1 Schedule';
+      event.calName = 'Shaker 2020 Quarter 2 Schedule';
     }
     const { error, value } = createEvents(events);
     if (error) {
@@ -333,5 +336,9 @@ export default class Schedule2020 extends Vue {
     cursor: not-allowed;
     opacity: 0.75;
   }
+}
+
+.bg-gradient {
+  background: linear-gradient(135deg, #a13de0 20%, #0b75e0 100%);
 }
 </style>
