@@ -1,6 +1,6 @@
 <template>
   <Layout>
-    <div v-if="warnBrowser" class="bg-orange-200 text-gray-700">
+    <div v-if="warnBrowser" class="bg-orange-200">
       <p class="text-3xl font-bold">Use Safari for best results</p>
       Without Safari, you won't be able to export your schedule to your calendar.
       <span v-if="warnBrowser === 'social'">
@@ -26,50 +26,51 @@
       <div>
         <label class="inline-flex items-center mr-4">
           <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="a" v-model="groupAssignment">
-          <span class="ml-2 text-gray-700">Group A</span>
-          <span class="ml-2 text-sm text-gray-700">(Last names A-K)</span>
+          <span class="ml-2">Group A</span>
+          <span class="ml-2 text-sm">(Last names A-K)</span>
         </label>
         <label class="inline-flex items-center mr-4">
           <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="b" v-model="groupAssignment">
-          <span class="ml-2 text-gray-700">Group B</span>
-          <span class="ml-2 text-sm text-gray-700">(Last names L-Z)</span>
+          <span class="ml-2">Group B</span>
+          <span class="ml-2 text-sm">(Last names L-Z)</span>
         </label>
         <label class="inline-flex items-center">
-          <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="virtual" v-model="groupAssignment">
-          <span class="ml-2 text-gray-700">Virtual</span>
+          <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="v" v-model="groupAssignment">
+          <span class="ml-2">Virtual</span>
         </label>
       </div>
       <small>5<sup>th</sup> Period Lunch Group Assignment</small>
       <div>
         <label class="inline-flex items-center mr-4">
           <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="x" v-model="lunchOdd">
-          <span class="ml-2 text-gray-700">Group X</span>
+          <span class="ml-2">Group X</span>
         </label>
         <label class="inline-flex items-center mr-4">
           <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="y" v-model="lunchOdd">
-          <span class="ml-2 text-gray-700">Group Y</span>
+          <span class="ml-2">Group Y</span>
         </label>
         <label class="inline-flex items-center">
           <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="z" v-model="lunchOdd">
-          <span class="ml-2 text-gray-700">Group Z</span>
+          <span class="ml-2">Group Z</span>
         </label>
       </div>
       <small>6<sup>th</sup> Period Lunch Group Assignment</small>
       <div>
         <label class="inline-flex items-center mr-4">
           <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="x" v-model="lunchEven">
-          <span class="ml-2 text-gray-700">Group X</span>
+          <span class="ml-2">Group X</span>
         </label>
         <label class="inline-flex items-center mr-4">
           <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="y" v-model="lunchEven">
-          <span class="ml-2 text-gray-700">Group Y</span>
+          <span class="ml-2">Group Y</span>
         </label>
         <label class="inline-flex items-center">
           <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="z" v-model="lunchEven">
-          <span class="ml-2 text-gray-700">Group Z</span>
+          <span class="ml-2">Group Z</span>
         </label>
       </div>
-      <share-on-snap class="" url="bruh" />
+      <share-on-snap :disabled="!groupAssignment || !lunchOdd || !lunchEven"
+                     :url="$static.metadata.siteUrl + $url(`/2020-schedule/${groupAssignment}${lunchOdd}${lunchEven}.html`)" />
       <small class="block my-2">Leave fields blank if you don't have a class during that period.</small>
       <div class="grid sm:grid-cols-2 md:grid-cols-4 sm:gap-4">
         <div v-for="(period, index) in periods" :key="index">
@@ -373,3 +374,11 @@ export default class Schedule2020 extends Vue {
   background: linear-gradient(135deg, #a13de0 20%, #0b75e0 100%);
 }
 </style>
+
+<static-query>
+query {
+  metadata {
+    siteUrl
+  }
+}
+</static-query>

@@ -1,7 +1,7 @@
 <template>
   <a target="_blank" :href="snapUrl" rel="noreferrer, noopener">
     <slot v-if="$slots.default" />
-    <div v-else class="bg-brand-snap inline-flex p-2 rounded-full items-center">
+    <div v-else class="bg-brand-snap inline-flex p-2 rounded-full items-center" :class="disabled && 'opacity-50 cursor-not-allowed'">
       <Snapchat class="h-6 ml-1 mr-2" />
       <ShareOnSnapText class="h-6 mr-2 mt-1 w-auto" />
     </div>
@@ -16,6 +16,7 @@ import ShareOnSnapText from '@/assets/share-on-snap.svg';
 @Component({components:{Snapchat, ShareOnSnapText}})
 export default class ShareOnSnap extends Vue {
   @Prop({ type: String, required: true }) url!: string;
+  @Prop({ type: Boolean, default: false }) disabled!: boolean;
 
   mounted() {
     console.log(this);

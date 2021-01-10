@@ -1,7 +1,7 @@
 import * as puppeteer from 'puppeteer';
 import { compile, registerHelper } from 'handlebars';
 import { join } from 'path';
-import { readFile } from 'fs/promises';
+import { readFile, writeFile } from 'fs/promises';
 
 registerHelper('ifEquals', function(arg1, arg2, options) {
 	// @ts-ignore
@@ -25,8 +25,9 @@ registerHelper('ifEquals', function(arg1, arg2, options) {
 					lunch6,
 				}));
 				const clip = (await (await page.$('html'))!.boundingBox())!;
+				const base = `../../../static/2020-schedule/${group}${lunch5}${lunch6}`;
 				await page.screenshot({
-					path: `../../../static/2020-schedule/${group}${lunch5}${lunch6}.png`,
+					path: `${base}.png`,
 					omitBackground: true,
 					clip,
 				});
