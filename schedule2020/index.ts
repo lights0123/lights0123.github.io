@@ -25,7 +25,7 @@ registerHelper('ifEquals', function(arg1, arg2, options) {
 					lunch6,
 				}));
 				const clip = (await (await page.$('html'))!.boundingBox())!;
-				const base = `../../../static/2020-schedule/${group}${lunch5}${lunch6}`;
+				const base = `../static/2020-schedule/${group}${lunch5}${lunch6}`;
 				await page.screenshot({
 					path: `${base}.png`,
 					omitBackground: true,
