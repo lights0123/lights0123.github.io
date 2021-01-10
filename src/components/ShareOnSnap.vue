@@ -1,5 +1,5 @@
 <template>
-  <a target="_blank" :href="snapUrl" rel="noreferrer, noopener">
+  <a target="_blank" :href="disabled ? undefined : snapUrl" rel="noreferrer, noopener">
     <slot v-if="$slots.default" />
     <div v-else class="bg-brand-snap inline-flex p-2 rounded-full items-center" :class="disabled && 'opacity-50 cursor-not-allowed'">
       <Snapchat class="h-6 ml-1 mr-2" />
