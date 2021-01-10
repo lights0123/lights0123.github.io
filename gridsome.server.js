@@ -5,11 +5,12 @@
 // Changes here require a server restart.
 // To restart press CTRL + C in terminal and run `gridsome develop`
 
-const { writeFile } = require('fs/promises');
+const { promises: fs } = require('fs');
+const { writeFile } = fs;
 const { join } = require('path');
 
 module.exports = function(api, options) {
-	const {_pathPrefix, siteUrl} = api.config;
+	const { _pathPrefix, siteUrl } = api.config;
 	const promise = (async () => {
 		for (const group of ['a', 'b', 'v']) {
 			for (const lunch5 of ['x', 'y', 'z']) {
@@ -26,7 +27,7 @@ module.exports = function(api, options) {
 				}
 			}
 		}
-		if(process.env.NO_INDEX) {
+		if (process.env.NO_INDEX) {
 			await writeFile(join(__dirname, 'static/_headers'), `/*
    X-Robots-Tag: noindex`);
 		}
