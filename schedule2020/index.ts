@@ -15,6 +15,7 @@ registerHelper('ifEquals', function(arg1, arg2, options) {
 	const template = compile(res);
 	const browser = await puppeteer.launch({ args: ['--font-render-hinting=none'] });
 	const page = await browser.newPage();
+	await page.setViewport({...page.viewport(), deviceScaleFactor: 2});
 	await page.goto(`file:${join(__dirname, 'template.hbs')}`);
 	for (const group of ['a', 'b', 'v']) {
 		for (const lunch5 of ['x', 'y', 'z']) {
