@@ -4,7 +4,7 @@
       <p class="text-3xl font-bold">Use Safari for best results</p>
       Without Safari, you won't be able to export your schedule to your calendar.
       <span v-if="warnBrowser === 'social'">
-        Click the three dots in the top right corner, and select "Open in Safari".
+        Click the share button in the bottom-right corner and select "Open in Safari".
       </span>
       <span v-else>
         Please re-open this website in Safari.

@@ -45,6 +45,7 @@ module.exports = {
 				brand: {
 					snap: '#FFFC00'
 				},
+				orange: colors.orange,
 			},
 		},
 	},
