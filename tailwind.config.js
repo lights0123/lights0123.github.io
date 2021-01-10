@@ -40,6 +40,9 @@ module.exports = {
 					border: 'var(--color-ui-border)',
 					blockquote: 'var(--color-ui-blockquote)',
 				},
+				brand: {
+					snap: '#FFFC00'
+				}
 			},
 		},
 	},

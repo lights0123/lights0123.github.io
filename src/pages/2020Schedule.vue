@@ -11,17 +11,65 @@
       </span>
     </div>
     <p class="mt-8 bg-gradient text-white inline-block p-2 rounded text-xl">
-      <b class="mr-2">New</b> Updated for Quarter 2
+      <b class="mr-2">New</b> Updated for Quarter 3: In-Person
     </p>
-    <h1 class="mb-0">Shaker 2020 Quarter 2 Class Times</h1>
+    <h1 class="mb-0">Shaker 2021 Quarter 3 In Person Class Times</h1>
 
     <p class="mb-4">
-      Use this tool to see your class times for Shaker Heights High School 2020 Quarter 2, and export it to your
+      Use this tool to see your class times for Shaker Heights High School 2021 Quarter 3, and export it to your
       calendar. <span class="italic mb-3">Schedule from
       <a href="https://www.shaker.org/SampleSchedules.aspx" target="_blank" rel="noopener">shaker.org/SampleSchedules.aspx</a>
     </span>
     </p>
     <form accept-charset="UTF-8" @submit.prevent="submit">
+      <small>Group Assignment</small>
+      <div>
+        <label class="inline-flex items-center mr-4">
+          <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="a" v-model="groupAssignment">
+          <span class="ml-2 text-gray-700">Group A</span>
+          <span class="ml-2 text-sm text-gray-700">(Last names A-K)</span>
+        </label>
+        <label class="inline-flex items-center mr-4">
+          <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="b" v-model="groupAssignment">
+          <span class="ml-2 text-gray-700">Group B</span>
+          <span class="ml-2 text-sm text-gray-700">(Last names L-Z)</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="virtual" v-model="groupAssignment">
+          <span class="ml-2 text-gray-700">Virtual</span>
+        </label>
+      </div>
+      <small>5<sup>th</sup> Period Lunch Group Assignment</small>
+      <div>
+        <label class="inline-flex items-center mr-4">
+          <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="x" v-model="lunchOdd">
+          <span class="ml-2 text-gray-700">Group X</span>
+        </label>
+        <label class="inline-flex items-center mr-4">
+          <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="y" v-model="lunchOdd">
+          <span class="ml-2 text-gray-700">Group Y</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="z" v-model="lunchOdd">
+          <span class="ml-2 text-gray-700">Group Z</span>
+        </label>
+      </div>
+      <small>6<sup>th</sup> Period Lunch Group Assignment</small>
+      <div>
+        <label class="inline-flex items-center mr-4">
+          <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="x" v-model="lunchEven">
+          <span class="ml-2 text-gray-700">Group X</span>
+        </label>
+        <label class="inline-flex items-center mr-4">
+          <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="y" v-model="lunchEven">
+          <span class="ml-2 text-gray-700">Group Y</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input type="radio" class="form-radio h-5 w-5 text-blue-600" value="z" v-model="lunchEven">
+          <span class="ml-2 text-gray-700">Group Z</span>
+        </label>
+      </div>
+      <share-on-snap class="" url="bruh" />
       <small class="block my-2">Leave fields blank if you don't have a class during that period.</small>
       <div class="grid sm:grid-cols-2 md:grid-cols-4 sm:gap-4">
         <div v-for="(period, index) in periods" :key="index">
@@ -33,11 +81,6 @@
                  :id="`period${index}`">
         </div>
       </div>
-      <label class="flex items-center">
-        <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-500" v-model="includeWorkTime"
-               :disabled="warnBrowser">
-        <span class="ml-2">Include Independent Work Time</span>
-      </label>
       <label class="flex items-center my-3">
         <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-500" v-model="includeConferences"
                :disabled="warnBrowser">
@@ -66,6 +109,7 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { createEvents, DateArray, EventAttributes as EA } from 'ics';
 import { saveAs } from 'file-saver';
+import ShareOnSnap from '@/components/ShareOnSnap.vue';
 
 type EventAttributes = EA & {
   busyStatus?: 'BUSY' | 'FREE' | 'TENTATIVE' | 'OOF'
@@ -156,26 +200,29 @@ function addHalfClasses(periods: string[], start: 0 | 1) {
 }
 
 @Component({
+  components: { ShareOnSnap },
   // @ts-ignore
   metaInfo: {
-    title: 'Shaker 2020 Quarter 2 Class Times', meta: [{
+    title: 'Shaker 2021 Quarter 3 Class Times', meta: [{
       property: 'og:title',
-      content: 'Shaker 2020 Quarter 2 Class Times',
+      content: 'Shaker 2021 Quarter 3 Class Times',
     },
       {
         name: 'description',
-        content: 'See your class times for Shaker Heights High School 2020 Quarter 2, and export it to your calendar',
+        content: 'See your class times for Shaker Heights High School 2021 Quarter 3, and export it to your calendar',
       },
       {
         property: 'og:description',
-        content: 'See your class times for Shaker Heights High School 2020 Quarter 2, and export it to your calendar',
+        content: 'See your class times for Shaker Heights High School 2021 Quarter 3, and export it to your calendar',
         key: 'og:description',
       }],
   },
 })
 export default class Schedule2020 extends Vue {
   warnBrowser: boolean | 'social' = false;
-  includeWorkTime = true;
+  groupAssignment: string | null = null;
+  lunchOdd: string | null = null;
+  lunchEven: string | null = null;
   includeConferences = true;
   periods = ['', '', '', '', '', '', '', ''];
   changed = false;
@@ -233,22 +280,6 @@ export default class Schedule2020 extends Vue {
       recurrenceRule: 'FREQ=WEEKLY;BYDAY=WE;INTERVAL=1;UNTIL=20210116T050000Z',
       busyStatus: 'BUSY',
     });
-    if (this.includeWorkTime) {
-      events.push({
-        title: 'Independent Work Time',
-        start: [2020, 11, 9, 14, 55],
-        duration: { hours: 1, minutes: 5 },
-        recurrenceRule: 'FREQ=WEEKLY;BYDAY=MO;INTERVAL=1;UNTIL=20210116T050000Z',
-        busyStatus: 'FREE',
-      });
-      events.push({
-        title: 'Independent Work Time',
-        start: [2020, 11, 2, 8, 0],
-        duration: { minutes: 30 },
-        recurrenceRule: 'FREQ=WEEKLY;BYDAY=TU,WE;INTERVAL=1;UNTIL=20210116T050000Z',
-        busyStatus: 'FREE',
-      });
-    }
     if (this.includeConferences) {
       events.push({
         title: 'Conferences',
