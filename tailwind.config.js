@@ -1,3 +1,5 @@
+const colors = require('tailwindcss/colors');
+
 module.exports = {
 	theme: {
 		fontFamily: {
@@ -42,11 +44,11 @@ module.exports = {
 				},
 				brand: {
 					snap: '#FFFC00'
-				}
+				},
 			},
 		},
 	},
 	variants: {},
-	plugins: [require('@tailwindcss/custom-forms')],
+	plugins: [require('@tailwindcss/forms')],
 	purge: false,
 };

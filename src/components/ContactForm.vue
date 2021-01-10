@@ -99,7 +99,7 @@ export default class ContactForm extends Vue {
 .input {
 	@apply shadow border border-ui-sidebar rounded py-2 px-3 mb-4 w-full bg-ui-background;
 	&:focus {
-		@apply shadow-outline;
+		@apply ring;
 	}
 
 	&:invalid {
@@ -110,7 +110,7 @@ export default class ContactForm extends Vue {
 .textarea {
 	@apply shadow border border-ui-sidebar rounded py-2 px-3 mb-4 w-full bg-ui-background;
 	&:focus {
-		@apply shadow-outline;
+		@apply ring;
 	}
 
 	&:invalid {
