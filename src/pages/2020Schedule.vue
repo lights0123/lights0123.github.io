@@ -362,7 +362,7 @@ export default class Schedule2020 extends Vue {
   changed = false;
 
   get snap() {
-    return true; //'snap' in this.$route.query;
+    return 'snap' in this.$route.query;
   }
 
   mounted() {
