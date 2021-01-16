@@ -360,13 +360,11 @@ export default class Schedule2020 extends Vue {
   periods = ['', '', '', '', '', '', '', ''];
   rooms = ['', '', '', '', '', '', '', ''];
   changed = false;
-
-  get snap() {
-    return 'snap' in this.$route.query;
-  }
+  snap = false;
 
   mounted() {
     this.warnBrowser = iOSNotSafari(navigator.userAgent);
+    this.snap = 'snap' in this.$route.query;
   }
 
   get withStudyHalls() {
