@@ -1,6 +1,6 @@
 <template>
   <Layout>
-    <div v-if="warnBrowser" class="bg-orange-200">
+    <div v-if="warnBrowser" class="bg-orange-200 text-gray-800">
       <p class="text-3xl font-bold">Use Safari for best results</p>
       Without Safari, you won't be able to export your schedule to your calendar.
       <span v-if="warnBrowser === 'social'">
@@ -428,7 +428,7 @@ export default class Schedule2020 extends Vue {
       busyStatus: 'BUSY',
     });
     if (this.includeConferences) {
-      if(this.groupAssignment !== 'a') {
+      if (this.groupAssignment !== 'a') {
         events.push({
           title: 'Conferences',
           start: [2021, 1, 19, 8, 0],
@@ -444,7 +444,7 @@ export default class Schedule2020 extends Vue {
           busyStatus: 'FREE',
         });
       }
-      if(this.groupAssignment !== 'b') {
+      if (this.groupAssignment !== 'b') {
         events.push({
           title: 'Conferences',
           start: [2021, 1, 22, 8, 0],
@@ -479,7 +479,7 @@ export default class Schedule2020 extends Vue {
         const recurrenceRule = (isOdd ? (thurFri ? TH_RECUR : TU_RECUR) : (thurFri ? FR_RECUR : WE_RECUR)) + (inSchool ? APPLE_LOCATION : '');
         if ((i === 4 || i === 5) && lunch) {
           if (lunch === 'x') {
-            events.push({
+            if (inSchool) events.push({
               title: 'Lunch',
               start: copyDate(lunchTimes[lunch], weekdayStart),
               duration: { minutes: 30 },
@@ -510,7 +510,7 @@ export default class Schedule2020 extends Vue {
                 location: formatRoom(this.rooms[i]),
               } : {}),
             });
-            events.push({
+            if (inSchool) events.push({
               title: 'Lunch',
               start: copyDate(lunchTimes[lunch], weekdayStart),
               duration: { minutes: 30 },
@@ -541,7 +541,7 @@ export default class Schedule2020 extends Vue {
                 location: formatRoom(this.rooms[i]),
               } : {}),
             });
-            events.push({
+            if (inSchool) events.push({
               title: 'Lunch',
               start: copyDate(lunchTimes[lunch], weekdayStart),
               duration: { minutes: 30 },
@@ -568,7 +568,7 @@ export default class Schedule2020 extends Vue {
     }
     for (const event of events) {
       event.calName = 'Shaker 2020 Quarter 3 Schedule';
-      if(event.recurrenceRule) {
+      if (event.recurrenceRule) {
         event.recurrenceRule += generateExDate(event.start as DateTimeArray);
       }
     }
