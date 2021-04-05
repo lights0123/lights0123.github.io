@@ -151,6 +151,17 @@
       </a>
     </p>
     <h3 class="text-2xl mt-4" id="linux">Linux</h3>
+    <p class="mb-2 italic">This isn't needed on platforms such as Chrome OS or Android</p>
+    You'll first need to install some udev rules to ensure there are no permission errors, even if you're using the web
+    version. Create the file <code class="sm:whitespace-nowrap">/etc/udev/rules.d/69-n-link.rules</code>
+    with the following contents:
+    <code class="block bg-ui-sidebar p-2 overflow-y-auto my-1">
+      <pre># TI-Nspire
+SUBSYSTEM=="usb", ATTR{idVendor}=="0451", ATTR{idProduct}=="e012", ENV{ID_PDA}="1"
+# TI-Nspire CX II
+SUBSYSTEM=="usb", ATTR{idVendor}=="0451", ATTR{idProduct}=="e022", ENV{ID_PDA}="1"</pre>
+    </code>
+    Finally, run <code>udevadm control --reload-rules && udevadm trigger</code>.
     <h4 class="text-xl mt-4" id="deb">Deb</h4>
     Run <code>sudo dpkg -i n-link_version_amd64.deb</code>
     <h4 class="text-xl mt-4" id="appimage">AppImage</h4>
@@ -214,7 +225,10 @@ export default class NLink extends Vue {
   // };
 
   async mounted() {
-    const { tag_name, assets } = await (await fetch('https://api.github.com/repos/lights0123/n-link/releases/latest')).json() as { tag_name: string; assets: Asset[] };
+    const {
+      tag_name,
+      assets,
+    } = await (await fetch('https://api.github.com/repos/lights0123/n-link/releases/latest')).json() as { tag_name: string; assets: Asset[] };
     const msi = assets.find(({ name }) => name.endsWith('msi'));
     const dmg = assets.find(({ name }) => name.endsWith('dmg'));
     const appimage = assets.find(({ name }) => name.endsWith('AppImage'));
