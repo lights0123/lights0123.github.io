@@ -2,7 +2,8 @@
   <Layout>
     <div class="mt-4 -mb-2 flex items-center">
       <Logo class="h-16 w-16 mr-2 inline" />
-      <h1 class="m-0 text-6xl">N-Link</h1></div>
+      <h1 class="m-0 text-6xl">N-Link</h1>
+    </div>
     <p class="text-2xl">
       Free, cross-platform, CX-II compatible computer linking program for the TI-Nspire.
     </p>
@@ -15,8 +16,8 @@
         <Chrome class="w-8 h-8 mr-4" />
         <div class="text-center">
           <p class="font-bold">Open on the Web</p>
-          <p v-if="webUSB">Chrome-based browsers</p>
-          <p v-else>Requires a Chrome-based browser</p>
+          <p v-if="webUSB">Chrome-based browsers on Linux</p>
+          <p v-else>Requires a Chrome-based browser on Linux</p>
         </div>
       </a>
       <a class="xl:col-span-3 py-3 bg-blue-700 flex justify-center items-center text-white"
@@ -245,7 +246,7 @@ export default class NLink extends Vue {
   }
 
   get webUSB() {
-    return process.isClient && !!(navigator as any).usb;
+    return process.isClient && !!(navigator as any).usb && ['Linux', 'Android'].some(platform => navigator.platform.includes(platform));
   }
 };
 </script>
