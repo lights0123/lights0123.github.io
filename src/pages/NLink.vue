@@ -33,7 +33,7 @@
          class="xl:col-span-2 py-3 bg-blue-700 flex justify-center items-center text-white">
         <Windows class="w-8 h-8 mr-4" />
         <div class="text-center">
-          <p class="font-bold">Windows</p>
+          <p class="font-bold">Windows 10</p>
           <p>.msi</p>
         </div>
       </a>
