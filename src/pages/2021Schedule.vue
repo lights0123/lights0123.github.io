@@ -1,5 +1,10 @@
 <template>
   <Layout>
+    <div v-if="warnBrowser" class="mt-2 p-1 bg-orange-200 text-gray-800">
+      <p class="text-3xl font-bold">Tip: open in Safari</p>
+      Click the three dots in the top left and click "Open in Safari". This will allow you to easily
+      switch between your schedule and this website, without loosing your place.
+    </div>
     <div class="my-2 rounded max-w-sm overflow-hidden">
       <p class="bg-gradient text-white inline-block p-2 text-xl w-full font-bold">
         New: Auto-updates
@@ -12,7 +17,8 @@
     <h1 class="mb-0">Shaker 2021-2022 Schedule</h1>
 
     <p class="mb-4">
-      Use this tool to add your class times to your calendar for the Shaker Heights High School year 2021-2022.
+      Use this tool to add your class times to your calendar for the Shaker Heights High School year
+      2021-2022.
       <a
         href="https://docs.google.com/document/d/1NO09hg8JbsfhGaH-YjlhP-NVy1SP0VXk8QUEhfEcxYU/edit"
         target="_blank"
@@ -132,12 +138,17 @@ const uid = Math.random().toString(36).substring(7);
   },
 })
 export default class Schedule2020 extends Vue {
+  warnBrowser: false | 'social' = false;
   lunchOdd: 'A' | 'B' | 'C' | 'D' | null = null;
   lunchEven: 'A' | 'B' | 'C' | 'D' | null = null;
   periods = ['', '', '', '', '', '', '', ''];
   rooms = ['', '', '', '', '', '', '', ''];
   crewRoom = '';
   changed = false;
+
+  mounted() {
+    if (/(snapchat|instagram)/i.test(navigator.userAgent)) this.warnBrowser = 'social';
+  }
 
   @Watch('periods', { deep: true })
   onChange() {
