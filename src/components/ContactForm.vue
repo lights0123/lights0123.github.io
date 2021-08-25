@@ -91,7 +91,7 @@ export default class ContactForm extends Vue {
 	}
 }
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 .label {
 	@apply block text-sm font-bold mb-2;
 }

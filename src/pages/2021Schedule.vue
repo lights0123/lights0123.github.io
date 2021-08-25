@@ -166,7 +166,7 @@ export default class Schedule2020 extends Vue {
   }
 }
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 .numeric {
   font-variant-numeric: tabular-nums;
 }
