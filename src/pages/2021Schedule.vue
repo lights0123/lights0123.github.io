@@ -104,6 +104,16 @@
       <p v-else class="mt-2">
         Download your schedule to import it into your calendar. Click "OK" when prompted.
       </p>
+      <p>
+        While you're at it, need a map of the school?
+        <a
+          href="https://www.shaker.org/Downloads/SHHS%20map%202015.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Download it here</a
+        >.
+      </p>
     </form>
   </Layout>
 </template>
