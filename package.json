@@ -8,7 +8,7 @@
 	},
 	"dependencies": {
 		"@openfonts/cantarell_latin": "^1.44.2",
-		"@tailwindcss/postcss7-compat": "^2.0.2",
+		"@tailwindcss/postcss7-compat": "npm:@tailwindcss/postcss7-compat",
 		"autoprefixer": "^9",
 		"base32768": "^2.0.2",
 		"feather-icons": "^4.28.0",
