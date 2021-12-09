@@ -8,19 +8,22 @@
 const { promises: fs } = require('fs');
 const { writeFile } = fs;
 const { join } = require('path');
+const promise = (async () => {
+  if (process.env.NO_INDEX) {
+    await writeFile(
+      join(__dirname, 'static/_headers'),
+      `/*
+   X-Robots-Tag: noindex`
+    );
+  }
+})();
 
-module.exports = function(api, options) {
-	const promise = (async () => {
-		if (process.env.NO_INDEX) {
-			await writeFile(join(__dirname, 'static/_headers'), `/*
-   X-Robots-Tag: noindex`);
-		}
-	})();
-	api.loadSource(async ({ addCollection }) => {
-		await promise;
-	});
+module.exports = function (api, options) {
+  api.loadSource(async ({ addCollection }) => {
+    await promise;
+  });
 
-	api.createPages(({ createPage }) => {
-		// Use the Pages API here: https://gridsome.org/docs/pages-api/
-	});
+  api.createPages(({ createPage }) => {
+    // Use the Pages API here: https://gridsome.org/docs/pages-api/
+  });
 };

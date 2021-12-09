@@ -1,7 +1,7 @@
 <template>
 	<nav class="p-2" :class="{'bg-blue-500': !large}">
 		<div class="container mx-auto flex items-center justify-between flex-wrap" :class="{'lg:h-16': large}">
-			<g-link to="/" class="flex items-center flex-shrink-0 text-ui-background mr-6 lg:mr-10" active-class="a">
+			<g-link to="/" class="flex items-center flex-shrink-0 text-ui-background mr-6 lg:mr-10 hide-if-active" active-class="a">
 				<span class="font-semibold text-3xl tracking-tight">{{ $static.metadata.siteName }}</span>
 			</g-link>
 			<div class="block lg:hidden">
@@ -24,10 +24,13 @@
 				</div>
 			</div>
 			<div class="hidden lg:flex text-ui-background mt-6 lg:mt-0" :style="expandMenu ? {display: 'flex'} : {}">
-				<a href="https://github.com/lights0123" rel="noopener" target="_blank" title="Github">
-					<github role="img" aria-label="Github" />
+				<a class="mr-4" href="https://www.linkedin.com/in/ben-schattinger-9414b0220/" rel="noopener" target="_blank" title="LinkedIn">
+					<linkedin role="img" aria-label="LinkedIn" />
 				</a>
-				<toggle-dark-mode />
+				<a href="https://github.com/lights0123" rel="noopener" target="_blank" title="GitHub">
+					<github role="img" aria-label="GitHub" />
+				</a>
+				<toggle-dark-mode class="ml-6" />
 			</div>
 		</div>
 	</nav>
@@ -36,10 +39,12 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import Github from 'feather-icons/dist/icons/github.svg';
+import Linkedin from 'feather-icons/dist/icons/linkedin.svg';
 import ToggleDarkMode from '@/components/ToggleDarkMode.vue';
 @Component({
 	components: {
 		Github,
+		Linkedin,
 		ToggleDarkMode,
 	},
 })
@@ -79,5 +84,9 @@ query {
 	@media(min-width: theme('screens.lg')) {
 		@apply flex #{!important};
 	}
+}
+
+.hide-if-active.active--exact {
+	@apply invisible;
 }
 </style>
