@@ -6,6 +6,7 @@
 		"noImplicitReturns": true,
 		"experimentalDecorators": true,
 		"outDir": "./built/",
+		"lib": ["DOM"],
 		"sourceMap": true,
 		"strict": true,
 		"baseUrl": ".",

@@ -1,5 +1,5 @@
 <template>
-	<button @click="$theme.toggle" :aria-label="$theme.dark ? 'Enable Light Theme' : 'Enable Dark Theme'" :title="$theme.dark ? 'Enable Light Theme' : 'Enable Dark Theme'" class="ml-6">
+	<button @click="$theme.toggle" :aria-label="$theme.dark ? 'Enable Light Theme' : 'Enable Dark Theme'" :title="$theme.dark ? 'Enable Light Theme' : 'Enable Dark Theme'">
 		<moon v-if="$theme.dark" role="img" aria-label="Enable Light Theme" />
 		<sun v-else role="img" aria-label="Enable Dark Theme" />
 	</button>
