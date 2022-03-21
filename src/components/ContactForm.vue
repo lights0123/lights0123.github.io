@@ -69,7 +69,7 @@ export default class ContactForm extends Vue {
 		this.status = 'submit';
 		try {
 			const now = new Date();
-			if(now.getFullYear() === 2022 && now.getMonth() === 1) throw new Error('Ran out of Formcarry submissions');
+			if(now.getFullYear() === 2022 && (now.getMonth() === 1 || now.getMonth() === 2)) throw new Error('Ran out of Formcarry submissions');
 			const res = await fetch(this.action, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
