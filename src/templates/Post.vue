@@ -5,7 +5,7 @@
 				<on-this-page />
 			</div>
 			<div class="order-1 w-full md:w-2/3">
-				<h1 class="text-5xl mb-0">{{$page.post.title}}</h1>
+				<h1 class="text-5xl mb-2">{{$page.post.title}}</h1>
 				<p class="text-gray-600 text-sm mb-6">
 					<time :datetime="$page.post.rawDate">{{ $page.post.date }}</time>
 					<span class="italic" v-if="$page.post.updated">

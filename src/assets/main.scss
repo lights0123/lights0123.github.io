@@ -35,6 +35,10 @@ $primary: #409EFF;
 
 @import "./material-light";
 
+.dark-only {
+	display: none;
+}
+
 html.dark {
 	--color-ui-background: theme('colors.gray.900');
 	--color-ui-emph: theme('colors.white');
@@ -47,6 +51,14 @@ html.dark {
 	--color-code-highlight: #{darken($primary, 40%)};
 
 	@import "./material-dark";
+
+	.light-only {
+		display: none;
+	}
+
+	.dark-only {
+		display: initial;
+	}
 }
 
 .gridsome-highlight {
@@ -193,3 +205,15 @@ h3 {
 h4 {
 	@apply text-lg;
 }
+
+.bg-gradient-cool {
+	background: linear-gradient(135deg, #a13de0 20%, #0b75e0 100%);
+	@apply rounded;
+	transition: transform 0.2s, border-radius 0.2s;
+  
+	&:hover {
+		transform: scale(1.01);
+		@apply rounded-lg;
+	}
+}
+  
