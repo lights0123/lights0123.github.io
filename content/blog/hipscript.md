@@ -1,9 +1,7 @@
 ---
 title: 'HipScript'
 description:
-    "With the recent ability for Rust to target AVR, it's time for me to bring my favorite feature
-    of Rust to Arduino: async/await. Asynchronous code allows for doing (seemingly) multiple things
-    at once, without the memory or CPU overhead of threads."
+    "By chaining several compilers, you can run CUDA code in the browser!"
 date: 2025-01-07
 ---
 
